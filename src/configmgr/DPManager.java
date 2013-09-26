@@ -1,5 +1,7 @@
 package configmgr;
 
+import java.util.HashMap;
+
 public class DPManager {
 
 	private String id;
@@ -10,7 +12,17 @@ public class DPManager {
 	
 	private double version;
 	
-	private int VersionsStoredLimit;
+	private int versionsStoredLimit;
+	
+	private HashMap<String, Devices> devices = new HashMap<String, Devices>();
+	
+	public void addDevice(Devices device){
+		devices.put(device.getId(), device);
+	}
+	
+	public HashMap<String, Devices> getDevices(){
+		return devices;
+	}
 	
 	public String getId() {
 		return id;
@@ -45,10 +57,10 @@ public class DPManager {
 	}
 
 	public int getVersionsStoredLimit() {
-		return VersionsStoredLimit;
+		return versionsStoredLimit;
 	}
 
 	public void setVersionsStoredLimit(int versionsStoredLimit) {
-		VersionsStoredLimit = versionsStoredLimit;
+		versionsStoredLimit = versionsStoredLimit;
 	}
 }

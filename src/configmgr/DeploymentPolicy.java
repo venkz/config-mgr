@@ -1,5 +1,7 @@
 package configmgr;
 
+import java.util.HashMap;
+
 public class DeploymentPolicy {
 
 	private String id;
@@ -8,11 +10,17 @@ public class DeploymentPolicy {
 
 	private int synchDate;
 
-	private Boolean outOfSynch;
+	private String policyType;
 
-	private int quiesceTimeout;
+	private HashMap<String, ServiceEndPoint> serviceEndPoints = new HashMap<String, ServiceEndPoint>();
 
-	private String syncMode;
+	public void addServiceEndPoint(ServiceEndPoint serviceEndPoint) {
+		serviceEndPoints.put(serviceEndPoint.getId(), serviceEndPoint);
+	}
+	
+	public HashMap<String, ServiceEndPoint> getServierEndPoints(){
+		return serviceEndPoints;
+	}
 
 	public String getId() {
 		return id;
@@ -38,28 +46,12 @@ public class DeploymentPolicy {
 		this.synchDate = synchDate;
 	}
 
-	public Boolean getOutOfSynch() {
-		return outOfSynch;
+	public String getPolicyType() {
+		return policyType;
 	}
 
-	public void setOutOfSynch(Boolean outOfSynch) {
-		this.outOfSynch = outOfSynch;
-	}
-
-	public int getQuiesceTimeout() {
-		return quiesceTimeout;
-	}
-
-	public void setQuiesceTimeout(int quiesceTimeout) {
-		this.quiesceTimeout = quiesceTimeout;
-	}
-
-	public String getSyncMode() {
-		return syncMode;
-	}
-
-	public void setSyncMode(String syncMode) {
-		this.syncMode = syncMode;
+	public void setPolicyType(String policyType) {
+		this.policyType = policyType;
 	}
 
 }

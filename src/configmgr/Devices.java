@@ -1,5 +1,7 @@
 package configmgr;
 
+import java.util.HashMap;
+
 public class Devices {
 
 	private String id;
@@ -16,6 +18,16 @@ public class Devices {
 
 	private String featureLicenses;
 
+	private HashMap<String, Domains> domains = new HashMap<String, Domains>();
+	
+	public void addDomain(Domains domain){
+		domains.put(domain.getId(), domain);
+	}
+	
+	public HashMap<String, Domains> getDomains(){
+		return domains;
+	}
+	
 	public String getId() {
 		return id;
 	}

@@ -1,5 +1,7 @@
 package configmgr;
 
+import java.util.HashMap;
+
 public class Domains {
 
 	private String id;
@@ -13,6 +15,16 @@ public class Domains {
 	private int quiesceTimeout;
 	
 	private String syncMode;
+	
+	private HashMap<String, DeploymentPolicy> deploymentPolicies = new HashMap<String, DeploymentPolicy>();
+	
+	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy){
+		deploymentPolicies.put(deploymentPolicy.getId(), deploymentPolicy);
+	}
+	
+	public HashMap<String, DeploymentPolicy> getDeploymentPolicies(){
+		return deploymentPolicies;
+	}
 
 	public String getId() {
 		return id;
