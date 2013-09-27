@@ -55,6 +55,14 @@ public class ServiceEndPoint {
 	public void setTargetServer(String targetServer) {
 		this.targetServer = targetServer;
 	}
+	
+	public void printAllAttributes(){
+		System.out.println("xmi:id=" + this.getId());
+		System.out.println("type="+ this.getType());
+		System.out.println("operation=" + this.getOperation());
+		System.out.println("port="+this.getPort());
+		System.out.println("targetserver="+this.getTargetServer());
+	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
