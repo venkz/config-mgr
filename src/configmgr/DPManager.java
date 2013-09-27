@@ -20,9 +20,21 @@ public class DPManager {
 		devices.put(device.getId(), device);
 	}
 	
+	/*/
+	 * Returns all devices in DPManager
+	 */
 	public HashMap<String, Devices> getDevices(){
 		return devices;
 	}
+	
+	public Devices getDevice(String deviceId){
+		return devices.get(deviceId);
+	}
+	
+	public void printDPDeviceCount(){
+		System.out.println(devices.size());
+	}
+	
 	
 	public String getId() {
 		return id;
@@ -61,6 +73,6 @@ public class DPManager {
 	}
 
 	public void setVersionsStoredLimit(int versionsStoredLimit) {
-		versionsStoredLimit = versionsStoredLimit;
+		this.versionsStoredLimit = versionsStoredLimit;
 	}
 }

@@ -28,6 +28,14 @@ public class Devices {
 		return domains;
 	}
 	
+	public Domains getDomain(String domainId){
+		return domains.get(domainId);
+	}
+	
+	public void printDomainsCount(){
+		System.out.print(domains.size());
+	}
+	
 	public String getId() {
 		return id;
 	}

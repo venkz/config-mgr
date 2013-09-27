@@ -15,7 +15,7 @@ public class ServiceEndPoint {
 	public ServiceEndPoint() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -56,5 +56,15 @@ public class ServiceEndPoint {
 		this.targetServer = targetServer;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Service Endpoint:");
+		sb.append(" xmi:id=" + this.getId());
+		sb.append(" type=" + this.getType());
+		sb.append(" operation="+ this.getOperation());
+		sb.append(" port=" + this.getPort());
+		sb.append(" targetserver" + this.getTargetServer());
+		
+		return sb.toString();
+	}
 }
-

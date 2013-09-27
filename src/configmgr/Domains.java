@@ -26,6 +26,14 @@ public class Domains {
 		return deploymentPolicies;
 	}
 
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId){
+		return deploymentPolicies.get(deploymentPolicyId);
+	}
+	
+	public void printDeploymentPoliciesCount(){
+		System.out.println(deploymentPolicies.size());
+	}
+	
 	public String getId() {
 		return id;
 	}

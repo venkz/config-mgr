@@ -12,7 +12,7 @@ public class ConfigXMLParser extends DefaultHandler {
 	private final StringBuilder tempVal = new StringBuilder();
 
 	private HashMap<String, DPManager> dpManagers;
-	private DPManager tmpManager;
+	private DPManager dbManager;
 	private Devices device;
 	private Domains domain;
 	private DeploymentPolicy deploymentPolicy;
@@ -35,15 +35,15 @@ public class ConfigXMLParser extends DefaultHandler {
 		if (TAG_DP_MANAGER.equalsIgnoreCase(qName)) {
 
 			dpManagers = new HashMap<String, DPManager>();
-			tmpManager = new DPManager();
+			dbManager = new DPManager();
 
-			tmpManager.setDat(attributes.getValue("xmlns:dat"));
-			tmpManager.setXmi(attributes.getValue("xmlns:xmi"));
-			tmpManager.setVersion(Double.parseDouble(attributes
+			dbManager.setDat(attributes.getValue("xmlns:dat"));
+			dbManager.setXmi(attributes.getValue("xmlns:xmi"));
+			dbManager.setVersion(Double.parseDouble(attributes
 					.getValue("xmi:version")));
-			tmpManager.setVersionsStoredLimit(Integer.parseInt(attributes
+			dbManager.setVersionsStoredLimit(Integer.parseInt(attributes
 					.getValue("VersionsStoredLimit")));
-			tmpManager.setId(attributes.getValue("xmi:id"));
+			dbManager.setId(attributes.getValue("xmi:id"));
 
 		} else if (TAG_DEVICES.equalsIgnoreCase(qName)) {
 			device = new Devices();
@@ -117,9 +117,9 @@ public class ConfigXMLParser extends DefaultHandler {
 		} else if (TAG_DOMAINS.equalsIgnoreCase(qName)) {
 			device.addDomain(domain);
 		} else if (TAG_DEVICES.equalsIgnoreCase(tag)) {
-			tmpManager.addDevice(device);
+			dbManager.addDevice(device);
 		} else if (TAG_DP_MANAGER.equalsIgnoreCase(tag)) {
-			dpManagers.put(tmpManager.getId(), tmpManager);
+			dpManagers.put(dbManager.getId(), dbManager);
 		}
 	}
 
@@ -139,4 +139,7 @@ public class ConfigXMLParser extends DefaultHandler {
 		return tagsStack.peek();
 	}
 
+	public DPManager getDPManager() {
+		return dbManager;
+	}
 }

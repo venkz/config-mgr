@@ -18,10 +18,26 @@ public class DeploymentPolicy {
 		serviceEndPoints.put(serviceEndPoint.getId(), serviceEndPoint);
 	}
 	
-	public HashMap<String, ServiceEndPoint> getServierEndPoints(){
+	public HashMap<String, ServiceEndPoint> getServiceEndPoints(){
 		return serviceEndPoints;
 	}
 
+	public ServiceEndPoint getServiceEndPoint(String serviceEndPointId){
+		for(String key : serviceEndPoints.keySet())
+		{
+			ServiceEndPoint serviceEndPoint = this.serviceEndPoints.get(key);
+			if(serviceEndPoint.getId().equalsIgnoreCase(serviceEndPointId)){
+				return serviceEndPoint;
+			}
+		}
+		return null;
+		//return serviceEndPoints.get(serviceEndPointId);
+	}
+	
+	public void printServiceEndPointCount(){
+		System.out.println(serviceEndPoints.size());
+	}
+	
 	public String getId() {
 		return id;
 	}
