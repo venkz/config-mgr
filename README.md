@@ -17,3 +17,7 @@ Objective
 The main objective of this project is to get experience with **tree data structures** (implemented
 as XML documents) and (in-memory) **searching algorithms**.
 
+Technologies used:
+==================
+1. Mainly project is developed using **Java**.
+2. For XML parsing, we are using **SAX Parser**.
