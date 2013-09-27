@@ -36,8 +36,7 @@ public class ConfigTest {
 		configTest.printDomainsCount("DPDevice_0");
 		configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
 		configTest.printServiceEndPointsCount("DPPolicy_3");
-		configTest.printServiceEndPointAttributes("DPPolicy_0",
-				"SvcEndPoint_0_2");
+		configTest.printServiceEndPointAttributes("DPPolicy_0","SvcEndpoint_0_2");
 	}
 
 	public void readCmdLine() {
@@ -142,7 +141,8 @@ public class ConfigTest {
 
 			if (this.serviceEndPoint != null) {
 				// Print all attributes of Service End Point.
-				System.out.print(this.serviceEndPoint.toString());
+				//System.out.print(this.serviceEndPoint.toString());
+				this.serviceEndPoint.printAllAttributes();
 			}
 		}
 	}

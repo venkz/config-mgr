@@ -64,7 +64,7 @@ public class ServiceEndPoint {
 		System.out.println("targetserver="+this.getTargetServer());
 	}
 
-	public String toString() {
+	/*public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Service Endpoint:");
 		sb.append(" xmi:id=" + this.getId());
@@ -74,5 +74,5 @@ public class ServiceEndPoint {
 		sb.append(" targetserver" + this.getTargetServer());
 		
 		return sb.toString();
-	}
+	}*/
 }

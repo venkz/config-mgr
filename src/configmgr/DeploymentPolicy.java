@@ -15,7 +15,7 @@ public class DeploymentPolicy {
 	private HashMap<String, ServiceEndPoint> serviceEndPoints = new HashMap<String, ServiceEndPoint>();
 
 	public void addServiceEndPoint(ServiceEndPoint serviceEndPoint) {
-		serviceEndPoints.put(serviceEndPoint.getId(), serviceEndPoint);
+		this.serviceEndPoints.put(serviceEndPoint.getId(), serviceEndPoint);
 	}
 	
 	public HashMap<String, ServiceEndPoint> getServiceEndPoints(){
@@ -23,14 +23,16 @@ public class DeploymentPolicy {
 	}
 
 	public ServiceEndPoint getServiceEndPoint(String serviceEndPointId){
-		for(String key : serviceEndPoints.keySet())
+		return this.serviceEndPoints.get(serviceEndPointId);
+		
+		/*for(String key : serviceEndPoints.keySet())
 		{
 			ServiceEndPoint serviceEndPoint = this.serviceEndPoints.get(key);
 			if(serviceEndPoint.getId().equalsIgnoreCase(serviceEndPointId)){
 				return serviceEndPoint;
 			}
 		}
-		return null;
+		return null;*/
 		//return serviceEndPoints.get(serviceEndPointId);
 	}
 	
