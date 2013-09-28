@@ -125,7 +125,7 @@ public class ConfigTest {
 			SAXParser sp = saxParserFactory.newSAXParser();
 			sp.parse(xml, configParser);
 			dpManager = configParser.getDPManager();
-			System.out.println("XML Parse complete");
+			//System.out.println("XML Parse complete");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -135,7 +135,7 @@ public class ConfigTest {
 	 * / Prints number of Devices in DPmanager
 	 */
 	public void printDPDeviceCount() {
-		System.out.println("No. of DP Devices:");
+		//System.out.println("No. of DP Devices:");
 		dpManager.printDPDeviceCount();
 	}
 
@@ -147,7 +147,7 @@ public class ConfigTest {
 		device = dpManager.getDevice(deviceId);
 
 		if (device != null) {
-			System.out.println("No. of Domains in " + deviceId);
+			//System.out.println("No. of Domains in " + deviceId);
 			device.printDomainsCount();
 		}
 	}
@@ -159,8 +159,8 @@ public class ConfigTest {
 		if (device != null) {
 			domain = device.getDomain(domainId);
 			if (domain != null) {
-				System.out.println("No. of Deployment Policies in " + deviceId
-						+ "," + domainId);
+				//System.out.println("No. of Deployment Policies in " + deviceId
+				//		+ "," + domainId);
 				domain.printDeploymentPoliciesCount();
 			}
 		}
@@ -176,7 +176,7 @@ public class ConfigTest {
 		deploymentPolicy = deploymentPoliciesCollection.get(deploymentPolicyId);
 
 		if (deploymentPolicy != null) {
-			System.out.println("No. of Service Endpoints ");
+			//System.out.println("No. of Service Endpoints ");
 			deploymentPolicy.printServiceEndPointCount();
 		}
 	}
