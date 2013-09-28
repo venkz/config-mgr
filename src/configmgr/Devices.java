@@ -33,7 +33,7 @@ public class Devices {
 	}
 	
 	public void printDomainsCount(){
-		System.out.print(domains.size());
+		System.out.println(domains.size());
 	}
 	
 	public String getId() {
