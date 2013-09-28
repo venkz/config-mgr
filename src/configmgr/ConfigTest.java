@@ -26,9 +26,8 @@ public class ConfigTest {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
 		/*
-		 * ConfigTest tmain = new ConfigTest(); tmain.readCmdLine();
-		 */
 		ConfigTest configTest = new ConfigTest();
 		configTest.parseConfigXML();
 
@@ -37,29 +36,94 @@ public class ConfigTest {
 		configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
 		configTest.printServiceEndPointsCount("DPPolicy_3");
 		configTest.printServiceEndPointAttributes("DPPolicy_0","SvcEndpoint_0_2");
+		
+		*/
+		
+		String split_args[];
+		// TODO Auto-generated method stub
+		ConfigTest tmain = new ConfigTest();
+		
+		String read_command = tmain.getCmdLine();
+		while(!read_command.equalsIgnoreCase("end"))
+		{
+			
+			split_args = read_command.split(" ");
+			//System.out.println(split_args[0]);
+			
+			if(split_args[0].equalsIgnoreCase("Configuration") )
+			{
+				tmain.parseConfigXML(split_args[1]);				
+			}
+			else if (split_args[0].equalsIgnoreCase("DPDevice") && split_args.length==1)
+			{
+				tmain.printDPDeviceCount();
+				
+			}
+			else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args.length==3)
+			{
+				
+			tmain.printDomainsCount(split_args[1]);	
+				
+				
+			}
+			else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args[4].equalsIgnoreCase("DeploymentPolicy") && split_args.length==5)
+			{
+				
+				
+				tmain.printDeploymentPolicyCount(split_args[1], split_args[3]);
+			}
+			else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==3)
+			{
+				
+				tmain.printServiceEndPointsCount(split_args[1]);
+			}
+			else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==4)
+			{
+				
+				tmain.printServiceEndPointAttributes(split_args[1],split_args[3]);
+				
+			}
+			else
+			{
+				System.out.println("Wrong arguments...Exiting");
+				break;
+				
+			}
+			
+			read_command = tmain.getCmdLine();
+		}
+		
+		
+		
+		
 	}
 
-	public void readCmdLine() {
-
+	public String getCmdLine()
+	{
+		
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 		try {
 			String cmdString = br.readLine();
-			System.out.println(cmdString);
-		} catch (IOException e) {
+			//System.out.println(cmdString);
+			return cmdString;
+		}
+		
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
 	}
-
-	public void parseConfigXML() {
+	
+	public void parseConfigXML(String xml) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 
 		ConfigXMLParser configParser = new ConfigXMLParser();
 
 		try {
 			SAXParser sp = saxParserFactory.newSAXParser();
-			sp.parse("edgeconfig_001U.xml", configParser);
+			sp.parse(xml, configParser);
 			dpManager = configParser.getDPManager();
 			System.out.println("XML Parse complete");
 		} catch (Exception ex) {
@@ -168,5 +232,5 @@ public class ConfigTest {
 				}
 			}
 		}
-	}
+	}	
 }
