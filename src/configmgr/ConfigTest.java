@@ -28,15 +28,15 @@ public class ConfigTest {
 		// TODO Auto-generated method stub
 
 		/*
-		ConfigTest configTest = new ConfigTest();
-		configTest.parseConfigXML();
-
-		configTest.printDPDeviceCount();
-		configTest.printDomainsCount("DPDevice_0");
-		configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
-		configTest.printServiceEndPointsCount("DPPolicy_3");
-		configTest.printServiceEndPointAttributes("DPPolicy_0","SvcEndpoint_0_2");
-
+		 * ConfigTest configTest = new ConfigTest();
+		 * configTest.parseConfigXML();
+		 * 
+		 * configTest.printDPDeviceCount();
+		 * configTest.printDomainsCount("DPDevice_0");
+		 * configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
+		 * configTest.printServiceEndPointsCount("DPPolicy_3");
+		 * configTest.printServiceEndPointAttributes
+		 * ("DPPolicy_0","SvcEndpoint_0_2");
 		 */
 		String cmdString;
 		String line;
@@ -44,87 +44,70 @@ public class ConfigTest {
 		// TODO Auto-generated method stub
 		ConfigTest tmain = new ConfigTest();
 
-		
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 		try {
-			while((line = br.readLine()) != null)
-
-			{
-
-
+			while ((line = br.readLine()) != null) {
 				cmdString = line;
-				//System.out.println(cmdString);
-				//return cmdString;
+				// System.out.println(cmdString);
+				// return cmdString;
 
 				split_args = cmdString.split(" ");
-				//System.out.println(split_args[0]);
+				// System.out.println(split_args[0]);
 
-				if(split_args[0].equalsIgnoreCase("Configuration") )
-				{
-					
-					tmain.parseConfigXML(split_args[1]);				
-				}
-				else if (split_args[0].equalsIgnoreCase("DPDevice") && split_args.length==1)
-				{
-					
+				if (split_args[0].equalsIgnoreCase("Configuration")) {
+
+					tmain.parseConfigXML(split_args[1]);
+				} else if (split_args[0].equalsIgnoreCase("DPDevice")
+						&& split_args.length == 1) {
+
 					tmain.printDPDeviceCount();
 
-				}
-				else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args.length==3)
-				{
+				} else if (split_args[0].equalsIgnoreCase("DPDevice")
+						&& split_args[2].equalsIgnoreCase("DPDomain")
+						&& split_args.length == 3) {
 
-					tmain.printDomainsCount(split_args[1]);	
+					tmain.printDomainsCount(split_args[1]);
 
+				} else if (split_args[0].equalsIgnoreCase("DPDevice")
+						&& split_args[2].equalsIgnoreCase("DPDomain")
+						&& split_args[4].equalsIgnoreCase("DeploymentPolicy")
+						&& split_args.length == 5) {
 
-				}
-				else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args[4].equalsIgnoreCase("DeploymentPolicy") && split_args.length==5)
-				{
-
-
-					tmain.printDeploymentPolicyCount(split_args[1], split_args[3]);
-				}
-				else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==3)
-				{
+					tmain.printDeploymentPolicyCount(split_args[1],
+							split_args[3]);
+				} else if (split_args[0].equalsIgnoreCase("DeploymentPolicy")
+						&& split_args[2].equalsIgnoreCase("Serviceendpoint")
+						&& split_args.length == 3) {
 
 					tmain.printServiceEndPointsCount(split_args[1]);
-				}
-				else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==4)
-				{
+				} else if (split_args[0].equalsIgnoreCase("DeploymentPolicy")
+						&& split_args[2].equalsIgnoreCase("Serviceendpoint")
+						&& split_args.length == 4) {
 
-					tmain.printServiceEndPointAttributes(split_args[1],split_args[3]);
+					tmain.printServiceEndPointAttributes(split_args[1],
+							split_args[3]);
 
-				}
-				else
-				{
+				} else if (split_args[0].equalsIgnoreCase("end")) {
+					break;
+				} else {
 					System.out.println("Wrong arguments...Exiting");
 					break;
-
 				}
-
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//while(read_command!=null)
-
-		//	read_co = tmain.getCmdLine();
 	}
 
-
-
-
-
-
-	public String getCmdLine()
-	{
+	public String getCmdLine() {
 
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 		try {
 			String cmdString = br.readLine();
-			//System.out.println(cmdString);
+			// System.out.println(cmdString);
 			return cmdString;
 		}
 
@@ -141,10 +124,33 @@ public class ConfigTest {
 		ConfigXMLParser configParser = new ConfigXMLParser();
 
 		try {
+
+			// Memory overflow bug: Free existing memory space
+			for (String tmpkey : deploymentPoliciesCollection.keySet()) {
+				DeploymentPolicy tmpDP = deploymentPoliciesCollection
+						.get(tmpkey);
+				tmpDP = null;
+			}
+
+			for (String tmpkey : devicesCollection.keySet()) {
+				Devices tmpDev = devicesCollection.get(tmpkey);
+				tmpDev = null;
+			}
+
+			deploymentPoliciesCollection.clear();
+			devicesCollection.clear();
+			dpManager = new DPManager();
+			device = new Devices();
+			domain = new Domains();
+			deploymentPolicy = new DeploymentPolicy();
+			serviceEndPoint = new ServiceEndPoint();
+
+			Runtime.getRuntime().gc();
+
 			SAXParser sp = saxParserFactory.newSAXParser();
 			sp.parse(xml, configParser);
+
 			dpManager = configParser.getDPManager();
-			//System.out.println("XML Parse complete");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -154,7 +160,7 @@ public class ConfigTest {
 	 * / Prints number of Devices in DPmanager
 	 */
 	public void printDPDeviceCount() {
-		//System.out.println("No. of DP Devices:");
+		// System.out.println("No. of DP Devices:");
 		dpManager.printDPDeviceCount();
 	}
 
@@ -166,7 +172,7 @@ public class ConfigTest {
 		device = dpManager.getDevice(deviceId);
 
 		if (device != null) {
-			//System.out.println("No. of Domains in " + deviceId);
+			// System.out.println("No. of Domains in " + deviceId);
 			device.printDomainsCount();
 		}
 	}
@@ -178,8 +184,9 @@ public class ConfigTest {
 		if (device != null) {
 			domain = device.getDomain(domainId);
 			if (domain != null) {
-				//System.out.println("No. of Deployment Policies in " + deviceId
-				//		+ "," + domainId);
+				// System.out.println("No. of Deployment Policies in " +
+				// deviceId
+				// + "," + domainId);
 				domain.printDeploymentPoliciesCount();
 			}
 		}
@@ -195,7 +202,7 @@ public class ConfigTest {
 		deploymentPolicy = deploymentPoliciesCollection.get(deploymentPolicyId);
 
 		if (deploymentPolicy != null) {
-			//System.out.println("No. of Service Endpoints ");
+			// System.out.println("No. of Service Endpoints ");
 			deploymentPolicy.printServiceEndPointCount();
 		}
 	}
@@ -224,7 +231,7 @@ public class ConfigTest {
 
 			if (this.serviceEndPoint != null) {
 				// Print all attributes of Service End Point.
-				//System.out.print(this.serviceEndPoint.toString());
+				// System.out.print(this.serviceEndPoint.toString());
 				this.serviceEndPoint.printAllAttributes();
 			}
 		}
@@ -251,5 +258,5 @@ public class ConfigTest {
 				}
 			}
 		}
-	}	
+	}
 }

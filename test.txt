@@ -1,8 +1,21 @@
-Configuration edgeconfig_001U.xml
-DPDevice
-DPDevice DPDevice_0 DPDomain
-DPDevice DPDevice_1 DPDomain
-DPDevice DPDevice_3 DPDomain
-DeploymentPolicy DPPolicy_2 Serviceendpoint
-DeploymentPolicy DPPolicy_2 ServiceEndPoint SvcEndpoint_2_3
+Configuration edgeconfig2_sample.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+DPDevice DPDevice_1 DpDomain DPDomain_1_0 DeploymentPolicy
+DeploymentPolicy DPPolicy_0 Serviceendpoint
+DeploymentPolicy DPPolicy_0 Serviceendpoint SvcEndpoint_0_0
+Configuration edgeconfig2_sample.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+Configuration edgeconfig2_sample.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+Configuration edgeconfig2_sample.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+Configuration edgeconfig2_sample.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+Configuration edgeconfig2_sample.xml
+DpDevice
 end
