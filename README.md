@@ -36,6 +36,6 @@ _Memory leaks are handled_
 
 System Requirements
 -----------------------------------------------------------------
-java version "1.7.0_09"
-Java(TM) SE Runtime Environment (build 1.7.0_09-b05)
-Java HotSpot(TM) 64-Bit Server VM (build 23.5-b02, mixed mode)
+java version "1.7.0_09"   
+Java(TM) SE Runtime Environment (build 1.7.0_09-b05)  
+Java HotSpot(TM) 64-Bit Server VM (build 23.5-b02, mixed mode) 
