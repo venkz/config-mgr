@@ -1,4 +1,0 @@
-<dat:DPManager xmlns:dat="http://www.obfuscated/datapower/lfs/schemas/7.0/datapowermgr.xmi" xmlns:xmi="http://www.omg.org/XMI" xmi:version="2.0" VersionsStoredLimit="30" xmi:id="WAMTManager_0">
-<devices xmi:id="DPDevice_0" deviceType="XS40" GUIPort="50080" HLMPort="5550" currentAMPVersion="1.0" quiesceTimeout="60" featureLicenses="MQ;TAM;DataGlue;JAXP-API;PKCS7-SMIME;SQL-ODBC;Tibco-EMS;WebSphere-JMS;">
-</devices>
-</dat:DPManager>
