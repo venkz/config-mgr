@@ -26,7 +26,7 @@ public class ConfigTest {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+
 		/*
 		ConfigTest configTest = new ConfigTest();
 		configTest.parseConfigXML();
@@ -36,71 +36,90 @@ public class ConfigTest {
 		configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
 		configTest.printServiceEndPointsCount("DPPolicy_3");
 		configTest.printServiceEndPointAttributes("DPPolicy_0","SvcEndpoint_0_2");
-		
-		*/
-		
+
+		 */
+		String cmdString;
+		String line;
 		String split_args[];
 		// TODO Auto-generated method stub
 		ConfigTest tmain = new ConfigTest();
+
 		
-		String read_command = tmain.getCmdLine();
-		while(!read_command.equalsIgnoreCase("end"))
-		{
-			
-			split_args = read_command.split(" ");
-			//System.out.println(split_args[0]);
-			
-			if(split_args[0].equalsIgnoreCase("Configuration") )
+		InputStreamReader istr = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(istr);
+		try {
+			while((line = br.readLine()) != null)
+
 			{
-				tmain.parseConfigXML(split_args[1]);				
+
+
+				cmdString = line;
+				//System.out.println(cmdString);
+				//return cmdString;
+
+				split_args = cmdString.split(" ");
+				//System.out.println(split_args[0]);
+
+				if(split_args[0].equalsIgnoreCase("Configuration") )
+				{
+					
+					tmain.parseConfigXML(split_args[1]);				
+				}
+				else if (split_args[0].equalsIgnoreCase("DPDevice") && split_args.length==1)
+				{
+					
+					tmain.printDPDeviceCount();
+
+				}
+				else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args.length==3)
+				{
+
+					tmain.printDomainsCount(split_args[1]);	
+
+
+				}
+				else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args[4].equalsIgnoreCase("DeploymentPolicy") && split_args.length==5)
+				{
+
+
+					tmain.printDeploymentPolicyCount(split_args[1], split_args[3]);
+				}
+				else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==3)
+				{
+
+					tmain.printServiceEndPointsCount(split_args[1]);
+				}
+				else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==4)
+				{
+
+					tmain.printServiceEndPointAttributes(split_args[1],split_args[3]);
+
+				}
+				else
+				{
+					System.out.println("Wrong arguments...Exiting");
+					break;
+
+				}
+
 			}
-			else if (split_args[0].equalsIgnoreCase("DPDevice") && split_args.length==1)
-			{
-				tmain.printDPDeviceCount();
-				
-			}
-			else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args.length==3)
-			{
-				
-			tmain.printDomainsCount(split_args[1]);	
-				
-				
-			}
-			else if(split_args[0].equalsIgnoreCase("DPDevice") && split_args[2].equalsIgnoreCase("DPDomain") && split_args[4].equalsIgnoreCase("DeploymentPolicy") && split_args.length==5)
-			{
-				
-				
-				tmain.printDeploymentPolicyCount(split_args[1], split_args[3]);
-			}
-			else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==3)
-			{
-				
-				tmain.printServiceEndPointsCount(split_args[1]);
-			}
-			else if(split_args[0].equalsIgnoreCase("DeploymentPolicy") && split_args[2].equalsIgnoreCase("Serviceendpoint") && split_args.length==4)
-			{
-				
-				tmain.printServiceEndPointAttributes(split_args[1],split_args[3]);
-				
-			}
-			else
-			{
-				System.out.println("Wrong arguments...Exiting");
-				break;
-				
-			}
-			
-			read_command = tmain.getCmdLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		
-		
-		
+		//while(read_command!=null)
+
+		//	read_co = tmain.getCmdLine();
 	}
+
+
+
+
+
 
 	public String getCmdLine()
 	{
-		
+
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 		try {
@@ -108,14 +127,14 @@ public class ConfigTest {
 			//System.out.println(cmdString);
 			return cmdString;
 		}
-		
+
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	public void parseConfigXML(String xml) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 
