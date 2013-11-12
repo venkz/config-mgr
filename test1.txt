@@ -1,0 +1,6 @@
+Configuration edge_config3.xml
+DpDevice
+DPDevice DPDevice_0 DpDomain
+DPDevice DPDevice_1 DpDomain DPDomain_1_0 DeploymentPolicy
+DeploymentPolicy DPPolicy_0 Serviceendpoint
+DeploymentPolicy DPPolicy_0 Serviceendpoint SvcEndpoint_0_0

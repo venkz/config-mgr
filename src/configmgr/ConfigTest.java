@@ -1,4 +1,4 @@
-package configmgr;
+/*package configmgr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,13 +21,13 @@ public class ConfigTest {
 	// Domains>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
 
-	/**
+	*//**
 	 * @param args
-	 */
+	 *//*
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		/*
+		
 		 * ConfigTest configTest = new ConfigTest();
 		 * configTest.parseConfigXML();
 		 * 
@@ -37,7 +37,7 @@ public class ConfigTest {
 		 * configTest.printServiceEndPointsCount("DPPolicy_3");
 		 * configTest.printServiceEndPointAttributes
 		 * ("DPPolicy_0","SvcEndpoint_0_2");
-		 */
+		 
 		String cmdString;
 		String line;
 		String split_args[];
@@ -156,17 +156,17 @@ public class ConfigTest {
 		}
 	}
 
-	/*
+	
 	 * / Prints number of Devices in DPmanager
-	 */
+	 
 	public void printDPDeviceCount() {
 		// System.out.println("No. of DP Devices:");
 		dpManager.printDPDeviceCount();
 	}
 
-	/*
+	
 	 * / Prints the number of domains in DPDevice
-	 */
+	 
 	public void printDomainsCount(String deviceId) {
 		// First get the required device from DPManager
 		device = dpManager.getDevice(deviceId);
@@ -207,10 +207,10 @@ public class ConfigTest {
 		}
 	}
 
-	/*
+	
 	 * / Prints all attributes of a ServicePoint with serviceEndPointId of
 	 * DeploymentPolicy - deploymentPolicyId
-	 */
+	 
 	public void printServiceEndPointAttributes(String deploymentPolicyId,
 			String serviceEndPointId) {
 
@@ -237,10 +237,10 @@ public class ConfigTest {
 		}
 	}
 
-	/*
+	
 	 * / Scans all devices and domains under those devices. Then iterates all
 	 * domains to add all deployment policy under them to a class variable
-	 */
+	 
 	private void fetchAllDeploymentPolicies() {
 		// For getting the required Deployment Policy we first need to
 		// loop through all devices then through all domains under those devices
@@ -260,3 +260,4 @@ public class ConfigTest {
 		}
 	}
 }
+*/
