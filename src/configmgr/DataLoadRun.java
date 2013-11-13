@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class DataLoadRun {
 
 	public static void main(String[] args) {
-		System.out.println("Hello World");
+		//System.out.println("Hello World");
 		Connection con;
 		Statement stmt;
 		ResultSet res_set;
