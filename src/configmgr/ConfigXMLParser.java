@@ -12,6 +12,11 @@ public class ConfigXMLParser extends DefaultHandler {
 	private final StringBuilder tempVal = new StringBuilder();
 
 	private HashMap<String, DPManager> dpManagers;
+
+	public HashMap<String, DPManager> getDpManagers() {
+		return dpManagers;
+	}
+
 	private DPManager dbManager;
 	private Devices device;
 	private Domains domain;
