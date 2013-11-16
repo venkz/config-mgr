@@ -1,3 +1,6 @@
+# to show all tables.
+SELECT table_name FROM user_tables;
+
 # to display current database name (output: orcl)
 select sys_context('userenv','instance_name') from dual;
 
@@ -9,7 +12,10 @@ create table varun ( ssn int, address varchar(100));
 insert into varun values (100, '2305 champion ct');
 
 #ManagedSets table
-create table ManagedSets (xmiid varchar(100) PRIMARY KEY, devicemembers varchar(1000));
+create table ManagedSets (xmiid varchar(100) PRIMARY KEY);
+
+#ManagedSets table
+create table ManagedSetsDeviceMapping (manageSetId varchar(100), DEVICEMEMBERS varchar(100), PRIMARY KEY(manageSetId,DEVICEMEMBERS), FOREIGN KEY(manageSetId) REFERENCES ManagedSets(xmiid), FOREIGN KEY(DEVICEMEMBERS) REFERENCES Devicetable(xmiid) );
 
 #Device table
 create table Devicetable (xmiid varchar(100) PRIMARY KEY, devicetype varchar(50), GUIPort int, HLMPort int, currentAMPVersion float(8), quiseceTimeout int, featureLicenses varchar(1000));
@@ -18,7 +24,7 @@ create table Devicetable (xmiid varchar(100) PRIMARY KEY, devicetype varchar(50)
 create table Domaintable (xmiid varchar(100) PRIMARY KEY, HighestVersion int, SynchDate int, outofsynch varchar(10),  quiseceTimeout int, syncMode varchar(100), deviceid varchar(100), FOREIGN KEY(deviceid) REFERENCES Devicetable(xmiid));
 
 #Deployment Policy
-create table DeploymentPolicy (xmiid varchar(100) PRIMARY KEY, HighestVersion int, SynchDate int, outofsynch varchar(100));
+create table DeploymentPolicy (xmiid varchar(100) PRIMARY KEY, HighestVersion int, SynchDate int, PolicyType varchar(100));
 
 # DomainDeployment
  create table DomainDeploymentTable(domainId varchar(100), deploymentID varchar(100),PRIMARY KEY(domainId,deploymentID), FOREIGN KEY(domainId) REFERENCES Domaintable(xmiid), FOREIGN KEY(deploymentID) REFERENCES DeploymentPolicy(xmiid));           

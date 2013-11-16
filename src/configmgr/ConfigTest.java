@@ -1,9 +1,15 @@
-/*package configmgr;
+package configmgr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -15,90 +21,51 @@ public class ConfigTest {
 	private Domains domain;
 	private DeploymentPolicy deploymentPolicy;
 	private ServiceEndPoint serviceEndPoint;
+	private ResultSet rs;
+	private Statement stmt;
+	private Connection con;
+
+	public ConfigTest() throws SQLException {
+		DataLoadRun dataLoadRun = new DataLoadRun();
+		con = dataLoadRun.init();
+		con.setAutoCommit(true);
+		stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+				ResultSet.CONCUR_READ_ONLY);
+		stmt.executeUpdate("delete from SERVICEENDPOINTTABLE");
+		stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
+		stmt.executeUpdate("delete from DEPLOYMENTPOLICY");
+		stmt.executeUpdate("delete from DOMAINTABLE");
+		stmt.executeUpdate("delete from ManagedSetsDeviceMapping");
+		stmt.executeUpdate("delete from DEVICETABLE");
+		stmt.executeUpdate("delete from MANAGEDSETS");
+	}
 
 	HashMap<String, Devices> devicesCollection = new HashMap<String, Devices>();
-	// HashMap<String, Domains> allDomainsCollection = new HashMap<String,
-	// Domains>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
+	HashMap<String, DPManager> dpManagers = new HashMap<String, DPManager>();
+	Set<String> devicesUniqueCheck = new HashSet<String>();
+	Set<String> policyUniqueCheck = new HashSet<String>();
+	Set<String> managedUniqueCheck = new HashSet<String>();
 
-	*//**
-	 * @param args
-	 *//*
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
 
-		
-		 * ConfigTest configTest = new ConfigTest();
-		 * configTest.parseConfigXML();
-		 * 
-		 * configTest.printDPDeviceCount();
-		 * configTest.printDomainsCount("DPDevice_0");
-		 * configTest.printDeploymentPolicyCount("DPDevice_3", "DPDomain_3_0");
-		 * configTest.printServiceEndPointsCount("DPPolicy_3");
-		 * configTest.printServiceEndPointAttributes
-		 * ("DPPolicy_0","SvcEndpoint_0_2");
-		 
-		String cmdString;
-		String line;
-		String split_args[];
-		// TODO Auto-generated method stub
-		ConfigTest tmain = new ConfigTest();
+		ConfigTest configTest = new ConfigTest();
+		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml
+												// //edge_config3.xml
+		configTest.parseConfigXML(xmlFile);
 
-		InputStreamReader istr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(istr);
-		try {
-			while ((line = br.readLine()) != null) {
-				cmdString = line;
-				// System.out.println(cmdString);
-				// return cmdString;
+		configTest.storeDPDevices();
+		// configTest.storeDPManagedSets(); // NEEDS ATTENTION HERE!!!! DB
+		// MODELLING NEEDED.
+		// configTest.storeManagedSetsDeviceMapping();
+		configTest.storeDomains();
+		configTest.storeDeploymentPolicy();
+		configTest.storeDomainDeploymentTable();
+		//configTest.storeServiceEndPoints();
+		configTest.printNumberOfDevices();
+		configTest.printNumberDeploymentPolicies();
 
-				split_args = cmdString.split(" ");
-				// System.out.println(split_args[0]);
-
-				if (split_args[0].equalsIgnoreCase("Configuration")) {
-
-					tmain.parseConfigXML(split_args[1]);
-				} else if (split_args[0].equalsIgnoreCase("DPDevice")
-						&& split_args.length == 1) {
-
-					tmain.printDPDeviceCount();
-
-				} else if (split_args[0].equalsIgnoreCase("DPDevice")
-						&& split_args[2].equalsIgnoreCase("DPDomain")
-						&& split_args.length == 3) {
-
-					tmain.printDomainsCount(split_args[1]);
-
-				} else if (split_args[0].equalsIgnoreCase("DPDevice")
-						&& split_args[2].equalsIgnoreCase("DPDomain")
-						&& split_args[4].equalsIgnoreCase("DeploymentPolicy")
-						&& split_args.length == 5) {
-
-					tmain.printDeploymentPolicyCount(split_args[1],
-							split_args[3]);
-				} else if (split_args[0].equalsIgnoreCase("DeploymentPolicy")
-						&& split_args[2].equalsIgnoreCase("Serviceendpoint")
-						&& split_args.length == 3) {
-
-					tmain.printServiceEndPointsCount(split_args[1]);
-				} else if (split_args[0].equalsIgnoreCase("DeploymentPolicy")
-						&& split_args[2].equalsIgnoreCase("Serviceendpoint")
-						&& split_args.length == 4) {
-
-					tmain.printServiceEndPointAttributes(split_args[1],
-							split_args[3]);
-
-				} else if (split_args[0].equalsIgnoreCase("end")) {
-					break;
-				} else {
-					System.out.println("Wrong arguments...Exiting");
-					break;
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public String getCmdLine() {
@@ -151,66 +118,169 @@ public class ConfigTest {
 			sp.parse(xml, configParser);
 
 			dpManager = configParser.getDPManager();
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		dpManagers = configParser.getDpManagers();
 	}
 
-	
-	 * / Prints number of Devices in DPmanager
-	 
+	// Prints number of Devices in DPmanager
+
 	public void printDPDeviceCount() {
 		// System.out.println("No. of DP Devices:");
 		dpManager.printDPDeviceCount();
 	}
 
-	
-	 * / Prints the number of domains in DPDevice
-	 
-	public void printDomainsCount(String deviceId) {
-		// First get the required device from DPManager
-		device = dpManager.getDevice(deviceId);
+	// Stores the number of domains in DPDevice
 
-		if (device != null) {
-			// System.out.println("No. of Domains in " + deviceId);
-			device.printDomainsCount();
-		}
-	}
+	public void storeDomains() throws SQLException {
+		Set<String> domainsUniqueCheck = new HashSet<String>();
+		for (String device_id : dpManager.getDevices().keySet()) {
+			device = dpManager.getDevice(device_id);
+			for (String domain_id : device.getDomains().keySet()) {
+				domain = device.getDomain(domain_id);
+				try {
+					if (domainsUniqueCheck.add(domain.getId())) {
+						stmt.addBatch("insert into DOMAINTABLE (XMIID,HIGHESTVERSION,SYNCHDATE,OUTOFSYNCH,QUISECETIMEOUT,SYNCMODE,DEVICEID)"
+								+ "values('"
+								+ domain.getId()
+								+ "',"
+								+ domain.getHighestVersion()
+								+ ","
+								+ domain.getSynchDate()
+								+ ",'"
+								+ domain.isOutOfSynch()
+								+ "'"
+								+ ",'"
+								+ domain.getQuiesceTimeout()
+								+ "','"
+								+ domain.getSyncMode()
+								+ "','"
+								+ device_id
+								+ "')");
+					}
 
-	public void printDeploymentPolicyCount(String deviceId, String domainId) {
-		// First get the required device from DPManager
-		device = dpManager.getDevice(deviceId);
-
-		if (device != null) {
-			domain = device.getDomain(domainId);
-			if (domain != null) {
-				// System.out.println("No. of Deployment Policies in " +
-				// deviceId
-				// + "," + domainId);
-				domain.printDeploymentPoliciesCount();
+				} catch (SQLException e) {
+					continue;
+				}
 			}
 		}
+		stmt.executeBatch();
+		stmt.clearBatch();
 	}
 
-	public void printServiceEndPointsCount(String deploymentPolicyId) {
-		// Check if the local copy of all deployment policy is populated or not
-		// In case not then scan all nodes again
-		if (this.deploymentPoliciesCollection.size() == 0) {
-			this.fetchAllDeploymentPolicies();
+	public void storeDeploymentPolicy() {
+		for (String device_id : dpManager.getDevices().keySet()) {
+			device = dpManager.getDevice(device_id);
+			for (String domain_id : device.getDomains().keySet()) {
+				domain = device.getDomain(domain_id);
+				for (String policy_id : domain.getDeploymentPolicies().keySet()) {
+					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
+					try {
+						if (policyUniqueCheck.add(deploymentPolicy.getId())) {
+							stmt.addBatch("insert into DEPLOYMENTPOLICY (XMIID,HIGHESTVERSION,SYNCHDATE,POLICYTYPE)"
+									+ "values('"
+									+ deploymentPolicy.getId()
+									+ "',"
+									+ deploymentPolicy.getHighestVersion()
+									+ ","
+									+ deploymentPolicy.getSynchDate()
+									+ ",'"
+									+ deploymentPolicy.getPolicyType()
+									+ "')");
+						}
+					} catch (SQLException e) {
+						continue;
+					}
+				}
+			}
+
 		}
-
-		deploymentPolicy = deploymentPoliciesCollection.get(deploymentPolicyId);
-
-		if (deploymentPolicy != null) {
-			// System.out.println("No. of Service Endpoints ");
-			deploymentPolicy.printServiceEndPointCount();
+		try {
+			stmt.executeBatch();
+			stmt.clearBatch();
+		} catch (SQLException e) {
 		}
 	}
 
-	
-	 * / Prints all attributes of a ServicePoint with serviceEndPointId of
-	 * DeploymentPolicy - deploymentPolicyId
-	 
+	public void storeDomainDeploymentTable() {
+		Set<String> domainUniqueCheck = new HashSet<String>();
+		for (String device_id : dpManager.getDevices().keySet()) {
+			device = dpManager.getDevice(device_id);
+			for (String domain_id : device.getDomains().keySet()) {
+				domain = device.getDomain(domain_id);
+				for (String policy_id : domain.getDeploymentPolicies().keySet()) {
+					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
+					try {
+						if (domainUniqueCheck.add(domain.getId())) {
+							stmt.addBatch("insert into DOMAINDEPLOYMENTTABLE (DOMAINID,DEPLOYMENTID)"
+									+ "values('"
+									+ domain.getId()
+									+ "','"
+									+ deploymentPolicy.getId() + "')");
+						}
+					} catch (SQLException e) {
+						continue;
+					}
+				}
+
+			}
+		}
+		try {
+			stmt.executeBatch();
+			stmt.clearBatch();
+		} catch (Exception e) {
+		}
+	}
+
+	public void storeServiceEndPoints() {
+		for (String device_id : dpManager.getDevices().keySet()) {
+			device = dpManager.getDevice(device_id);
+			for (String domain_id : device.getDomains().keySet()) {
+				domain = device.getDomain(domain_id);
+				for (String policy_id : policyUniqueCheck) {
+					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
+					if (deploymentPolicy != null) {
+						for (String service_id : deploymentPolicy
+								.getServiceEndPoints().keySet()) {
+							serviceEndPoint = deploymentPolicy
+									.getServiceEndPoint(service_id);
+							try {
+								stmt.addBatch("insert into ServiceEndpointTable (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
+										+ "values('"
+										+ serviceEndPoint.getId()
+										+ "','"
+										+ serviceEndPoint.getType()
+										+ "','"
+										+ serviceEndPoint.getOperation()
+										+ "',"
+										+ serviceEndPoint.getPort()
+										+ ""
+										+ ",'"
+										+ serviceEndPoint.getTargetServer()
+										+ "','" + policy_id + "')");
+							} catch (SQLException e) {
+								continue;
+							}
+						}
+					}
+
+				}
+			}
+		}
+		try {
+			stmt.executeBatch();
+			stmt.clearBatch();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// Prints all attributes of a ServicePoint with serviceEndPointId of
+	// DeploymentPolicy - deploymentPolicyId
+
 	public void printServiceEndPointAttributes(String deploymentPolicyId,
 			String serviceEndPointId) {
 
@@ -237,10 +307,9 @@ public class ConfigTest {
 		}
 	}
 
-	
-	 * / Scans all devices and domains under those devices. Then iterates all
-	 * domains to add all deployment policy under them to a class variable
-	 
+	// Scans all devices and domains under those devices. Then iterates all
+	// domains to add all deployment policy under them to a class variable
+
 	private void fetchAllDeploymentPolicies() {
 		// For getting the required Deployment Policy we first need to
 		// loop through all devices then through all domains under those devices
@@ -259,5 +328,79 @@ public class ConfigTest {
 			}
 		}
 	}
+
+	// Stores the list of Devices in DPmanager
+	public void storeDPDevices() throws SQLException {
+		for (String device_id : dpManager.getDevices().keySet()) {
+			device = dpManager.getDevice(device_id);
+			try {
+				if (devicesUniqueCheck.add(device.getId())) {
+					stmt.addBatch("insert into DEVICETABLE (XMIID,DEVICETYPE,HLMPORT,CURRENTAMPVERSION,QUISECETIMEOUT,FEATURELICENSES)"
+							+ "values('"
+							+ device.getId()
+							+ "','"
+							+ device.getDeviceType()
+							+ "','"
+							+ device.getHlmPort()
+							+ "','"
+							+ device.getCurrentAMPVersion()
+							+ "'"
+							+ ",'"
+							+ device.getQuiesceTimeout()
+							+ "','"
+							+ device.getFeatureLicenses() + "')");
+				}
+			} catch (SQLException e) {
+				continue;
+			}
+		}
+		stmt.executeBatch();
+		stmt.clearBatch();
+	}
+
+	// NEEDS ATTENTION HERE!!!! DB MODELLING NEEDED.
+
+	public void storeDPManagedSets() throws SQLException {
+		for (String managedSet_id : dpManagers.keySet()) {
+			dpManager = dpManagers.get(managedSet_id);
+			if (managedUniqueCheck.add(managedSet_id)) {
+				stmt.executeQuery("insert into MANAGEDSETS (XMIID)"
+						+ "values('" + dpManager.getId() + "')");
+			}
+		}
+	}
+
+	public void storeManagedSetsDeviceMapping() throws SQLException {
+		for (String managedSet_id : managedUniqueCheck) {
+			dpManager = dpManagers.get(managedSet_id);
+			for (String device_id : dpManager.getDevices().keySet()) {
+				device = dpManager.getDevice(device_id);
+				if (devicesUniqueCheck.contains(device_id)) {
+					stmt.executeQuery("insert into ManagedSetsDeviceMapping (manageSetId,DEVICEMEMBERS)"
+							+ "values('"
+							+ managedSet_id
+							+ "','"
+							+ device.getId() + "')");
+				}
+			}
+
+		}
+	}
+
+	public void printNumberDeploymentPolicies() throws SQLException {
+		rs = stmt
+				.executeQuery("select count(*) AS number_policies from DeploymentPolicy");
+		if (rs.next()) {
+			System.out.println(rs.getInt("number_policies"));
+		}
+	}
+
+	public void printNumberOfDevices() throws SQLException {
+		rs = stmt
+				.executeQuery("select count(*) AS number_nodes from DEVICETABLE");
+		if (rs.next()) {
+			System.out.println(rs.getInt("number_nodes"));
+		}
+	}
+
 }
-*/
