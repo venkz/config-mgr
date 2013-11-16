@@ -25,34 +25,43 @@ public class ConfigTest {
 	private Statement stmt;
 	private Connection con;
 
-	public ConfigTest() throws SQLException {
-		DataLoadRun dataLoadRun = new DataLoadRun();
-		con = dataLoadRun.init();
-		con.setAutoCommit(true);
-		stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				ResultSet.CONCUR_READ_ONLY);
-		stmt.executeUpdate("delete from SERVICEENDPOINTTABLE");
-		stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
-		stmt.executeUpdate("delete from DEPLOYMENTPOLICY");
-		stmt.executeUpdate("delete from DOMAINTABLE");
-		stmt.executeUpdate("delete from ManagedSetsDeviceMapping");
-		stmt.executeUpdate("delete from DEVICETABLE");
-		stmt.executeUpdate("delete from MANAGEDSETS");
-	}
-
 	HashMap<String, Devices> devicesCollection = new HashMap<String, Devices>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
 	HashMap<String, DPManager> dpManagers = new HashMap<String, DPManager>();
 	Set<String> devicesUniqueCheck = new HashSet<String>();
 	Set<String> policyUniqueCheck = new HashSet<String>();
 	Set<String> managedUniqueCheck = new HashSet<String>();
+	
+	
+	public ConfigTest() throws SQLException   {
+		DatabaseConnectionManager connectionManager = new DatabaseConnectionManager();
+		con = connectionManager.getConnection();
+		con.setAutoCommit(true);
+		stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+				ResultSet.CONCUR_READ_ONLY);
+		
+		this.deleteAllFromDatabase();
+	}
+	
+	private void deleteAllFromDatabase()
+	{
+		try {
+			stmt.executeUpdate("delete from SERVICEENDPOINTTABLE");
+			stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
+			stmt.executeUpdate("delete from DEPLOYMENTPOLICY");
+			stmt.executeUpdate("delete from DOMAINTABLE");
+			stmt.executeUpdate("delete from ManagedSetsDeviceMapping");
+			stmt.executeUpdate("delete from DEVICETABLE");
+			stmt.executeUpdate("delete from MANAGEDSETS");
+		} catch (SQLException e) { 
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args) throws SQLException {
-		// TODO Auto-generated method stub
 
 		ConfigTest configTest = new ConfigTest();
-		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml
-												// //edge_config3.xml
+		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml //edge_config3.xml
 		configTest.parseConfigXML(xmlFile);
 
 		configTest.storeDPDevices();
@@ -87,7 +96,6 @@ public class ConfigTest {
 
 	public void parseConfigXML(String xml) {
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-
 		ConfigXMLParser configParser = new ConfigXMLParser();
 
 		try {
