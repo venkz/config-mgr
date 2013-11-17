@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,20 +32,18 @@ public class ConfigTest {
 	Set<String> devicesUniqueCheck = new HashSet<String>();
 	Set<String> policyUniqueCheck = new HashSet<String>();
 	Set<String> managedUniqueCheck = new HashSet<String>();
-	
-	
-	public ConfigTest() throws SQLException   {
-		DatabaseConnectionManager connectionManager = new DatabaseConnectionManager();
+
+	public ConfigTest() throws SQLException {
+		DBConnManager connectionManager = new DBConnManager();
 		con = connectionManager.getConnection();
 		con.setAutoCommit(true);
 		stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 				ResultSet.CONCUR_READ_ONLY);
-		
+
 		this.deleteAllFromDatabase();
 	}
-	
-	private void deleteAllFromDatabase()
-	{
+
+	private void deleteAllFromDatabase() {
 		try {
 			stmt.executeUpdate("delete from SERVICEENDPOINTTABLE");
 			stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
@@ -53,7 +52,7 @@ public class ConfigTest {
 			stmt.executeUpdate("delete from ManagedSetsDeviceMapping");
 			stmt.executeUpdate("delete from DEVICETABLE");
 			stmt.executeUpdate("delete from MANAGEDSETS");
-		} catch (SQLException e) { 
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -61,19 +60,24 @@ public class ConfigTest {
 	public static void main(String[] args) throws SQLException {
 
 		ConfigTest configTest = new ConfigTest();
-		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml //edge_config3.xml
+		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml,
+												// //edge_config3.xml
+
 		configTest.parseConfigXML(xmlFile);
 
-		configTest.storeDPDevices();
-		// configTest.storeDPManagedSets(); // NEEDS ATTENTION HERE!!!! DB
-		// MODELLING NEEDED.
-		// configTest.storeManagedSetsDeviceMapping();
+		configTest.storeDevices();
 		configTest.storeDomains();
 		configTest.storeDeploymentPolicy();
 		configTest.storeDomainDeploymentTable();
-		//configTest.storeServiceEndPoints();
-		configTest.printNumberOfDevices();
-		configTest.printNumberDeploymentPolicies();
+
+		// configTest.storeDPManagedSets(); // NEEDS ATTENTION HERE!!!! DB
+		// MODELLING NEEDED.
+		// configTest.storeManagedSetsDeviceMapping();
+
+		// configTest.storeServiceEndPoints();
+
+		configTest.printDevicesCount();
+		configTest.printDeploymentPoliciesCount();
 
 	}
 
@@ -143,13 +147,14 @@ public class ConfigTest {
 	// Stores the number of domains in DPDevice
 
 	public void storeDomains() throws SQLException {
-		Set<String> domainsUniqueCheck = new HashSet<String>();
+		Set<String> domainIdSet = new HashSet<String>();
+
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
 				domain = device.getDomain(domain_id);
 				try {
-					if (domainsUniqueCheck.add(domain.getId())) {
+					if (domainIdSet.add(domain.getId())) {
 						stmt.addBatch("insert into DOMAINTABLE (XMIID,HIGHESTVERSION,SYNCHDATE,OUTOFSYNCH,QUISECETIMEOUT,SYNCMODE,DEVICEID)"
 								+ "values('"
 								+ domain.getId()
@@ -159,8 +164,7 @@ public class ConfigTest {
 								+ domain.getSynchDate()
 								+ ",'"
 								+ domain.isOutOfSynch()
-								+ "'"
-								+ ",'"
+								+ "','"
 								+ domain.getQuiesceTimeout()
 								+ "','"
 								+ domain.getSyncMode()
@@ -213,7 +217,8 @@ public class ConfigTest {
 	}
 
 	public void storeDomainDeploymentTable() {
-		Set<String> domainUniqueCheck = new HashSet<String>();
+		Set<String> domainIdSet = new HashSet<String>();
+
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
@@ -221,7 +226,7 @@ public class ConfigTest {
 				for (String policy_id : domain.getDeploymentPolicies().keySet()) {
 					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
 					try {
-						if (domainUniqueCheck.add(domain.getId())) {
+						if (domainIdSet.add(domain.getId())) {
 							stmt.addBatch("insert into DOMAINDEPLOYMENTTABLE (DOMAINID,DEPLOYMENTID)"
 									+ "values('"
 									+ domain.getId()
@@ -338,76 +343,106 @@ public class ConfigTest {
 	}
 
 	// Stores the list of Devices in DPmanager
-	public void storeDPDevices() throws SQLException {
-		for (String device_id : dpManager.getDevices().keySet()) {
-			device = dpManager.getDevice(device_id);
-			try {
-				if (devicesUniqueCheck.add(device.getId())) {
-					stmt.addBatch("insert into DEVICETABLE (XMIID,DEVICETYPE,HLMPORT,CURRENTAMPVERSION,QUISECETIMEOUT,FEATURELICENSES)"
-							+ "values('"
-							+ device.getId()
-							+ "','"
-							+ device.getDeviceType()
-							+ "','"
-							+ device.getHlmPort()
-							+ "','"
-							+ device.getCurrentAMPVersion()
-							+ "'"
-							+ ",'"
-							+ device.getQuiesceTimeout()
-							+ "','"
-							+ device.getFeatureLicenses() + "')");
+	public void storeDevices() {
+		try {
+			for (String device_id : dpManager.getDevices().keySet()) {
+				device = dpManager.getDevice(device_id);
+				try {
+					if (devicesUniqueCheck.add(device.getId())) {
+						stmt.addBatch("insert into DEVICETABLE (XMIID,DEVICETYPE,GUIPORT,HLMPORT,CURRENTAMPVERSION,QUISECETIMEOUT,FEATURELICENSES)"
+								+ "values('"
+								+ device.getId()
+								+ "','"
+								+ device.getDeviceType()
+								+ "','"
+								+ device.getGuiPort()
+								+ "','"
+								+ device.getHlmPort()
+								+ "','"
+								+ device.getCurrentAMPVersion()
+								+ "','"
+								+ device.getQuiesceTimeout()
+								+ "','"
+								+ device.getFeatureLicenses() + "')");
+					}
+				} catch (SQLException e) {
+					continue;
 				}
-			} catch (SQLException e) {
-				continue;
 			}
+			stmt.executeBatch();
+			stmt.clearBatch();
+		} catch (SQLException e) {
+			System.out.println("Error: store Devices.");
+			// e.printStackTrace();
 		}
-		stmt.executeBatch();
-		stmt.clearBatch();
+
 	}
 
 	// NEEDS ATTENTION HERE!!!! DB MODELLING NEEDED.
 
-	public void storeDPManagedSets() throws SQLException {
-		for (String managedSet_id : dpManagers.keySet()) {
-			dpManager = dpManagers.get(managedSet_id);
-			if (managedUniqueCheck.add(managedSet_id)) {
-				stmt.executeQuery("insert into MANAGEDSETS (XMIID)"
-						+ "values('" + dpManager.getId() + "')");
-			}
-		}
-	}
+	public void storeDPManagedSets() {
+		try {
+			for (String managedSet_id : dpManagers.keySet()) {
+				dpManager = dpManagers.get(managedSet_id);
+				if (managedUniqueCheck.add(managedSet_id)) {
 
-	public void storeManagedSetsDeviceMapping() throws SQLException {
-		for (String managedSet_id : managedUniqueCheck) {
-			dpManager = dpManagers.get(managedSet_id);
-			for (String device_id : dpManager.getDevices().keySet()) {
-				device = dpManager.getDevice(device_id);
-				if (devicesUniqueCheck.contains(device_id)) {
-					stmt.executeQuery("insert into ManagedSetsDeviceMapping (manageSetId,DEVICEMEMBERS)"
-							+ "values('"
-							+ managedSet_id
-							+ "','"
-							+ device.getId() + "')");
+					stmt.executeQuery("insert into MANAGEDSETS (XMIID)"
+							+ "values('" + dpManager.getId() + "')");
+
 				}
 			}
-
+		} catch (SQLException e) {
+			System.out.println("Error: store Managed Sets.");
+			// e.printStackTrace();
 		}
 	}
 
-	public void printNumberDeploymentPolicies() throws SQLException {
-		rs = stmt
-				.executeQuery("select count(*) AS number_policies from DeploymentPolicy");
-		if (rs.next()) {
-			System.out.println(rs.getInt("number_policies"));
+	public void storeManagedSetsDeviceMapping() {
+		try {
+			for (String managedSet_id : managedUniqueCheck) {
+				dpManager = dpManagers.get(managedSet_id);
+				for (String device_id : dpManager.getDevices().keySet()) {
+					device = dpManager.getDevice(device_id);
+					if (devicesUniqueCheck.contains(device_id)) {
+
+						stmt.executeQuery("insert into ManagedSetsDeviceMapping (manageSetId,DEVICEMEMBERS)"
+								+ "values('"
+								+ managedSet_id
+								+ "','"
+								+ device.getId() + "')");
+					}
+				}
+
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: store Managed Set Devices.");
+			// e.printStackTrace();
 		}
 	}
 
-	public void printNumberOfDevices() throws SQLException {
-		rs = stmt
-				.executeQuery("select count(*) AS number_nodes from DEVICETABLE");
-		if (rs.next()) {
-			System.out.println(rs.getInt("number_nodes"));
+	public void printDeploymentPoliciesCount() {
+		try {
+			rs = stmt
+					.executeQuery("select count(*) AS number_policies from DeploymentPolicy");
+			if (rs.next()) {
+				System.out.println(rs.getInt("number_policies"));
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: print Deployment Policies count.");
+			// e.printStackTrace();
+		}
+	}
+
+	public void printDevicesCount() {
+		try {
+			rs = stmt
+					.executeQuery("select count(*) AS number_nodes from DEVICETABLE");
+			if (rs.next()) {
+				System.out.println(rs.getInt("number_nodes"));
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: print Devices Count.");
+			// e.printStackTrace();
 		}
 	}
 
