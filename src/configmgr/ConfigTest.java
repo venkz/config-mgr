@@ -49,7 +49,7 @@ public class ConfigTest {
 			stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
 			stmt.executeUpdate("delete from DEPLOYMENTPOLICY");
 			stmt.executeUpdate("delete from DOMAINTABLE");
-			stmt.executeUpdate("delete from ManagedSetsDeviceMapping");
+			stmt.executeUpdate("delete from ManagedSetDevices");
 			stmt.executeUpdate("delete from DEVICETABLE");
 			stmt.executeUpdate("delete from MANAGEDSETS");
 		} catch (SQLException e) {
@@ -69,7 +69,8 @@ public class ConfigTest {
 		configTest.storeDomains();
 		configTest.storeDeploymentPolicy();
 		configTest.storeDomainDeploymentTable();
-
+		configTest.storeManagedSets();
+		configTest.storeManagedSetDevices();
 		// configTest.storeDPManagedSets(); // NEEDS ATTENTION HERE!!!! DB
 		// MODELLING NEEDED.
 		// configTest.storeManagedSetsDeviceMapping();
@@ -378,42 +379,48 @@ public class ConfigTest {
 
 	}
 
-	// NEEDS ATTENTION HERE!!!! DB MODELLING NEEDED.
-
-	public void storeDPManagedSets() {
+	public void storeManagedSets() {
 		try {
-			for (String managedSet_id : dpManagers.keySet()) {
-				dpManager = dpManagers.get(managedSet_id);
-				if (managedUniqueCheck.add(managedSet_id)) {
+			ManagedSet managedSet = new ManagedSet();
+			for (String managedSetId : dpManager.getManagedSets().keySet()) {
+				managedSet = dpManager.getManagedSet(managedSetId);
 
-					stmt.executeQuery("insert into MANAGEDSETS (XMIID)"
-							+ "values('" + dpManager.getId() + "')");
+				stmt.addBatch("insert into MANAGEDSETS (XMIID)" + "values('"
+						+ managedSet.getId() + "')");
 
-				}
+				// for(String deviceMemberId : managedSet.getDeviceMembers()){
+				// stmt.addBatch("insert into MANAGEDSETDEVICES (MANAGEDSETID, DEVICEID)"
+				// + "values('"
+				// + managedSet.getId()
+				// + "','"
+				// + deviceMemberId
+				// + "')");
+				// }
 			}
+			stmt.executeBatch();
+			stmt.clearBatch();
 		} catch (SQLException e) {
 			System.out.println("Error: store Managed Sets.");
 			// e.printStackTrace();
 		}
 	}
 
-	public void storeManagedSetsDeviceMapping() {
+	public void storeManagedSetDevices() {
 		try {
-			for (String managedSet_id : managedUniqueCheck) {
-				dpManager = dpManagers.get(managedSet_id);
-				for (String device_id : dpManager.getDevices().keySet()) {
-					device = dpManager.getDevice(device_id);
-					if (devicesUniqueCheck.contains(device_id)) {
+			ManagedSet managedSet = new ManagedSet();
+			for (String managedSetId : dpManager.getManagedSets().keySet()) {
+				managedSet = dpManager.getManagedSet(managedSetId);
 
-						stmt.executeQuery("insert into ManagedSetsDeviceMapping (manageSetId,DEVICEMEMBERS)"
-								+ "values('"
-								+ managedSet_id
-								+ "','"
-								+ device.getId() + "')");
-					}
+				for (String deviceMemberId : managedSet.getDeviceMembers()) {
+					stmt.addBatch("insert into MANAGEDSETDEVICES (MANAGESETID, DEVICEID)"
+							+ "values('"
+							+ managedSet.getId()
+							+ "','"
+							+ deviceMemberId + "')");
 				}
-
 			}
+			stmt.executeBatch();
+			stmt.clearBatch();
 		} catch (SQLException e) {
 			System.out.println("Error: store Managed Set Devices.");
 			// e.printStackTrace();

@@ -22,12 +22,14 @@ public class ConfigXMLParser extends DefaultHandler {
 	private Domain domain;
 	private DeploymentPolicy deploymentPolicy;
 	private ServiceEndPoint serviceEndPoint;
+	private ManagedSet managedSet;
 
 	final String TAG_DP_MANAGER = "dat:DPManager";
 	final String TAG_DEVICES = "devices";
 	final String TAG_DOMAINS = "domains";
 	final String TAG_DEPLOYMENT_POLICY = "deploymentPolicy";
 	final String TAG_SERVICE_END_POINT = "serviceend-point";
+	final String TAG_MANAGED_SET = "managedSets";
 
 	final String TAG_ID = "xmi:id";
 
@@ -97,8 +99,18 @@ public class ConfigXMLParser extends DefaultHandler {
 			serviceEndPoint
 					.setTargetServer(attributes.getValue("targetserver"));
 
+		} else if (TAG_MANAGED_SET.equalsIgnoreCase(qName)) {
+			managedSet = new ManagedSet();
+
+			managedSet.setId(attributes.getValue(TAG_ID));
+
+			String tempDeviceMembers = attributes.getValue("devicemembers");
+
+			for (String tempDeviceId : tempDeviceMembers.split(",")) {
+				managedSet.addDeviceMember(tempDeviceId);
+			}
 		}
-		else 
+		else
 		{
 			System.out.println();
 		}
@@ -119,7 +131,9 @@ public class ConfigXMLParser extends DefaultHandler {
 
 		popTag();
 
-		if (TAG_SERVICE_END_POINT.equalsIgnoreCase(qName)) {
+		if (TAG_MANAGED_SET.equalsIgnoreCase(qName)) {
+			dbManager.addManagedSet(managedSet);
+		} else if (TAG_SERVICE_END_POINT.equalsIgnoreCase(qName)) {
 			deploymentPolicy.addServiceEndPoint(serviceEndPoint);
 		} else if (TAG_DEPLOYMENT_POLICY.equalsIgnoreCase(qName)) {
 			domain.addDeploymentPolicy(deploymentPolicy);

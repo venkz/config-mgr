@@ -15,7 +15,7 @@ insert into varun values (100, '2305 champion ct');
 create table ManagedSets (xmiid varchar(100) PRIMARY KEY);
 
 #ManagedSets table
-create table ManagedSetsDeviceMapping (manageSetId varchar(100), DEVICEMEMBERS varchar(100), PRIMARY KEY(manageSetId,DEVICEMEMBERS), FOREIGN KEY(manageSetId) REFERENCES ManagedSets(xmiid), FOREIGN KEY(DEVICEMEMBERS) REFERENCES Devicetable(xmiid) );
+create table ManagedSetDevices (manageSetId varchar(100), DEVICEID varchar(100), PRIMARY KEY(manageSetId,DEVICEID));
 
 #Device table
 create table Devicetable (xmiid varchar(100) PRIMARY KEY, devicetype varchar(50), GUIPort int, HLMPort int, currentAMPVersion float(8), quiseceTimeout int, featureLicenses varchar(1000));

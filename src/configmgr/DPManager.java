@@ -18,8 +18,16 @@ public class DPManager {
 
 	private HashMap<String, ManagedSet> managedSets = new HashMap<String, ManagedSet>();
 
+	public HashMap<String, ManagedSet> getManagedSets() {
+		return this.managedSets;
+	}
+	
 	public void addManagedSet(ManagedSet managedSet) {
 		managedSets.put(managedSet.getId(), managedSet);
+	}
+
+	public ManagedSet getManagedSet(String managedSetId){
+		return this.managedSets.get(managedSetId);
 	}
 
 	public void addDevice(Device device) {
