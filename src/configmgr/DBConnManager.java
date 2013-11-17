@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DatabaseConnectionManager {
+public class DBConnManager {
 	
 	final String userID = "vkhuran";
 	final String pwd = "001082454";
