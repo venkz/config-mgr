@@ -2,7 +2,7 @@ package configmgr;
 
 import java.util.HashMap;
 
-public class Devices {
+public class Device {
 
 	private String id;
 
@@ -18,17 +18,17 @@ public class Devices {
 
 	private String featureLicenses;
 
-	private HashMap<String, Domains> domains = new HashMap<String, Domains>();
+	private HashMap<String, Domain> domains = new HashMap<String, Domain>();
 	
-	public void addDomain(Domains domain){
+	public void addDomain(Domain domain){
 		domains.put(domain.getId(), domain);
 	}
 	
-	public HashMap<String, Domains> getDomains(){
+	public HashMap<String, Domain> getDomains(){
 		return domains;
 	}
 	
-	public Domains getDomain(String domainId){
+	public Domain getDomain(String domainId){
 		return domains.get(domainId);
 	}
 	

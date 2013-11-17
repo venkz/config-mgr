@@ -18,15 +18,15 @@ import javax.xml.parsers.SAXParserFactory;
 public class ConfigTest {
 
 	private DPManager dpManager;
-	private Devices device;
-	private Domains domain;
+	private Device device;
+	private Domain domain;
 	private DeploymentPolicy deploymentPolicy;
 	private ServiceEndPoint serviceEndPoint;
 	private ResultSet rs;
 	private Statement stmt;
 	private Connection con;
 
-	HashMap<String, Devices> devicesCollection = new HashMap<String, Devices>();
+	HashMap<String, Device> devicesCollection = new HashMap<String, Device>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
 	HashMap<String, DPManager> dpManagers = new HashMap<String, DPManager>();
 	Set<String> devicesUniqueCheck = new HashSet<String>();
@@ -112,15 +112,15 @@ public class ConfigTest {
 			}
 
 			for (String tmpkey : devicesCollection.keySet()) {
-				Devices tmpDev = devicesCollection.get(tmpkey);
+				Device tmpDev = devicesCollection.get(tmpkey);
 				tmpDev = null;
 			}
 
 			deploymentPoliciesCollection.clear();
 			devicesCollection.clear();
 			dpManager = new DPManager();
-			device = new Devices();
-			domain = new Domains();
+			device = new Device();
+			domain = new Domain();
 			deploymentPolicy = new DeploymentPolicy();
 			serviceEndPoint = new ServiceEndPoint();
 
@@ -331,8 +331,8 @@ public class ConfigTest {
 
 		devicesCollection = dpManager.getDevices();
 
-		for (Devices device : devicesCollection.values()) {
-			for (Domains domain : device.getDomains().values()) {
+		for (Device device : devicesCollection.values()) {
+			for (Domain domain : device.getDomains().values()) {
 				for (DeploymentPolicy deploymendPolicy : domain
 						.getDeploymentPolicies().values()) {
 					this.deploymentPoliciesCollection.put(

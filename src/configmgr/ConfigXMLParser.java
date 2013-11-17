@@ -18,8 +18,8 @@ public class ConfigXMLParser extends DefaultHandler {
 	}
 
 	private DPManager dbManager;
-	private Devices device;
-	private Domains domain;
+	private Device device;
+	private Domain domain;
 	private DeploymentPolicy deploymentPolicy;
 	private ServiceEndPoint serviceEndPoint;
 
@@ -51,7 +51,7 @@ public class ConfigXMLParser extends DefaultHandler {
 			dbManager.setId(attributes.getValue("xmi:id"));
 
 		} else if (TAG_DEVICES.equalsIgnoreCase(qName)) {
-			device = new Devices();
+			device = new Device();
 
 			device.setId(attributes.getValue("xmi:id"));
 			device.setDeviceType(attributes.getValue("deviceType"));
@@ -63,7 +63,7 @@ public class ConfigXMLParser extends DefaultHandler {
 					.getValue("quiesceTimeout")));
 			device.setFeatureLicenses(attributes.getValue("featureLicenses"));
 		} else if (TAG_DOMAINS.equalsIgnoreCase(qName)) {
-			domain = new Domains();
+			domain = new Domain();
 
 			domain.setId(attributes.getValue(TAG_ID));
 			domain.setHighestVersion(Integer.parseInt(attributes
@@ -97,6 +97,10 @@ public class ConfigXMLParser extends DefaultHandler {
 			serviceEndPoint
 					.setTargetServer(attributes.getValue("targetserver"));
 
+		}
+		else 
+		{
+			System.out.println();
 		}
 
 	}
