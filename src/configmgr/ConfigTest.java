@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,25 +59,57 @@ public class ConfigTest {
 	public static void main(String[] args) throws SQLException {
 
 		ConfigTest configTest = new ConfigTest();
-		String xmlFile = "edge_config3.xml"; // edgeconfig_001U.xml,
-												// //edge_config3.xml
+		configTest.deliverable2();
+	}
 
-		configTest.parseConfigXML(xmlFile);
+	public void deliverable2() throws SQLException {
 
-		configTest.storeDevices();
-		configTest.storeDomains();
-		configTest.storeDeploymentPolicy();
-		configTest.storeDomainDeploymentTable();
-		configTest.storeManagedSets();
-		configTest.storeManagedSetDevices();
-		// configTest.storeDPManagedSets(); // NEEDS ATTENTION HERE!!!! DB
-		// MODELLING NEEDED.
-		// configTest.storeManagedSetsDeviceMapping();
+		String cmdString;
+		String line;
+		String split_args[];
+		String fileName = "edge_config3.xml";
 
-		// configTest.storeServiceEndPoints();
+		InputStreamReader istr = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(istr);
 
-		configTest.printDevicesCount();
-		configTest.printDeploymentPoliciesCount();
+		try {
+			while ((line = br.readLine()) != null) {
+				cmdString = line;
+
+				split_args = cmdString.split(" ");
+
+				if (split_args.length == 1) {
+					fileName = split_args[0];
+				} else if (split_args[0].equalsIgnoreCase("end")) {
+					break;
+				} else {
+					System.out.println("Please enter XML file name.");
+				}
+
+				if (fileName != null) {
+					String xmlFile = fileName;
+					// edgeconfig_001U.xml, edge_config3.xml
+
+					this.parseConfigXML(xmlFile);
+
+					this.storeDevices();
+					this.storeDomains();
+					this.storeDeploymentPolicy();
+					this.storeDomainDeploymentTable();
+					this.storeManagedSets();
+					this.storeManagedSetDevices();
+
+					// configTest.storeServiceEndPoints();
+
+					this.printDevicesCount();
+					this.printDeploymentPoliciesCount();
+				}
+
+			}
+		} catch (IOException e) {
+
+			System.out.println("Error in reading command.");
+		}
 
 	}
 
@@ -133,7 +164,9 @@ public class ConfigTest {
 			dpManager = configParser.getDPManager();
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			System.out
+					.println("Error reading the XML file. Please provide valid file.");
+			// ex.printStackTrace();
 		}
 		dpManagers = configParser.getDpManagers();
 	}
@@ -387,15 +420,6 @@ public class ConfigTest {
 
 				stmt.addBatch("insert into MANAGEDSETS (XMIID)" + "values('"
 						+ managedSet.getId() + "')");
-
-				// for(String deviceMemberId : managedSet.getDeviceMembers()){
-				// stmt.addBatch("insert into MANAGEDSETDEVICES (MANAGEDSETID, DEVICEID)"
-				// + "values('"
-				// + managedSet.getId()
-				// + "','"
-				// + deviceMemberId
-				// + "')");
-				// }
 			}
 			stmt.executeBatch();
 			stmt.clearBatch();
@@ -423,7 +447,6 @@ public class ConfigTest {
 			stmt.clearBatch();
 		} catch (SQLException e) {
 			System.out.println("Error: store Managed Set Devices.");
-			// e.printStackTrace();
 		}
 	}
 
