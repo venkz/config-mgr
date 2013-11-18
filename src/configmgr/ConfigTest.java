@@ -66,7 +66,7 @@ public class ConfigTest {
 	}
 
 	public void deliverable2() throws SQLException {
-
+		/*
 		String cmdString;
 		String line;
 		String split_args[];
@@ -74,7 +74,7 @@ public class ConfigTest {
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 
-		/*
+		
 		 * while ((line = br.readLine()) != null) { cmdString = line;
 		 * 
 		 * split_args = cmdString.split(" ");
@@ -233,16 +233,19 @@ public class ConfigTest {
 	}
 
 	public void storeDomainDeploymentTable() {
-		Set<String> domainIdSet = new HashSet<String>();
-
+		deploymentPolicyIdSet.clear();
+		
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
+				
+				deploymentPolicyIdSet.clear();
+				
 				domain = device.getDomain(domain_id);
 				for (String policy_id : domain.getDeploymentPolicies().keySet()) {
 					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
 					try {
-						if (domainIdSet.add(domain.getId())) {
+						if (deploymentPolicyIdSet.add(deploymentPolicy.getId())) {
 							stmt.addBatch("insert into DOMAINDEPLOYMENTTABLE (DOMAINID,DEPLOYMENTID)"
 									+ "values('"
 									+ domain.getId()
