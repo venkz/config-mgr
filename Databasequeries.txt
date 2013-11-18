@@ -30,4 +30,4 @@ create table DeploymentPolicy (xmiid varchar(100) PRIMARY KEY, HighestVersion in
  create table DomainDeploymentTable(domainId varchar(100), deploymentID varchar(100),PRIMARY KEY(domainId,deploymentID), FOREIGN KEY(domainId) REFERENCES Domaintable(xmiid), FOREIGN KEY(deploymentID) REFERENCES DeploymentPolicy(xmiid));           
 
 # Service Endpoint
-create table ServiceEndpointTable (xmiid varchar(100) PRIMARY KEY,type varchar(100),operation varchar(100),port int, targetserver varchar(200), DPPolicyId varchar(100), FOREIGN KEY(DPPolicyId) REFERENCES DeploymentPolicy(xmiid));
+create table ServiceEndpoints (xmiid varchar(100) PRIMARY KEY,type varchar(100),operation varchar(100),port int, targetserver varchar(200), DPPolicyId varchar(100), FOREIGN KEY(DPPolicyId) REFERENCES DeploymentPolicy(xmiid));
