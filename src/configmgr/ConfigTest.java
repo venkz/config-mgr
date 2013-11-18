@@ -24,6 +24,7 @@ public class ConfigTest {
 	private ResultSet rs;
 	private Statement stmt;
 	private Connection con;
+	String fileName = null;
 
 	HashMap<String, Device> devicesCollection = new HashMap<String, Device>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
@@ -60,6 +61,7 @@ public class ConfigTest {
 	public static void main(String[] args) throws SQLException {
 
 		ConfigTest configTest = new ConfigTest();
+		configTest.fileName = args[0];
 		configTest.deliverable2();
 	}
 
@@ -68,50 +70,37 @@ public class ConfigTest {
 		String cmdString;
 		String line;
 		String split_args[];
-		String fileName = "edge_config3.xml";
 
 		InputStreamReader istr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(istr);
 
-		try {
-			while ((line = br.readLine()) != null) {
-				cmdString = line;
+		/*
+		 * while ((line = br.readLine()) != null) { cmdString = line;
+		 * 
+		 * split_args = cmdString.split(" ");
+		 * 
+		 * if (split_args.length == 1) { fileName = split_args[0];
+		 * System.out.print(fileName); } else if
+		 * (split_args[0].equalsIgnoreCase("end")) { break; } else {
+		 * System.out.println("Please enter XML file name."); }
+		 */
+		if (fileName != null) {
+			String xmlFile = fileName;
+			// edgeconfig_001U.xml, edge_config3.xml
 
-				split_args = cmdString.split(" ");
+			this.parseConfigXML(xmlFile);
 
-				if (split_args.length == 1) {
-					fileName = split_args[0];
-					System.out.print(fileName);
-				} else if (split_args[0].equalsIgnoreCase("end")) {
-					break;
-				} else {
-					System.out.println("Please enter XML file name.");
-				}
+			this.storeDevices();
+			this.storeDomains();
+			this.storeDeploymentPolicy();
+			this.storeDomainDeploymentTable();
+			this.storeManagedSets();
+			this.storeManagedSetDevices();
+			this.storeServiceEndPoints();
 
-				if (fileName != null) {
-					String xmlFile = fileName;
-					// edgeconfig_001U.xml, edge_config3.xml
-
-					this.parseConfigXML(xmlFile);
-
-					this.storeDevices();
-					this.storeDomains();
-					this.storeDeploymentPolicy();
-					this.storeDomainDeploymentTable();
-					this.storeManagedSets();
-					this.storeManagedSetDevices();
-					this.storeServiceEndPoints();
-
-					this.printDevicesCount();
-					this.printDeploymentPoliciesCount();
-				}
-
-			}
-		} catch (IOException e) {
-
-			System.out.println("Error in reading command.");
+			this.printDevicesCount();
+			this.printDeploymentPoliciesCount();
 		}
-
 	}
 
 	public void parseConfigXML(String xml) {
