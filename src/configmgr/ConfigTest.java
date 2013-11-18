@@ -28,8 +28,8 @@ public class ConfigTest {
 	HashMap<String, Device> devicesCollection = new HashMap<String, Device>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
 	HashMap<String, DPManager> dpManagers = new HashMap<String, DPManager>();
-	Set<String> devicesUniqueCheck = new HashSet<String>();
-	Set<String> policyUniqueCheck = new HashSet<String>();
+	Set<String> devicesIdSet = new HashSet<String>();
+	Set<String> deploymentPolicyIdSet = new HashSet<String>();
 	Set<String> managedUniqueCheck = new HashSet<String>();
 
 	public ConfigTest() throws SQLException {
@@ -44,7 +44,7 @@ public class ConfigTest {
 
 	private void deleteAllFromDatabase() {
 		try {
-			stmt.executeUpdate("delete from SERVICEENDPOINTTABLE");
+			stmt.executeUpdate("delete from ServiceEndpoints");
 			stmt.executeUpdate("delete from DOMAINDEPLOYMENTTABLE");
 			stmt.executeUpdate("delete from DEPLOYMENTPOLICY");
 			stmt.executeUpdate("delete from DOMAINTABLE");
@@ -52,7 +52,7 @@ public class ConfigTest {
 			stmt.executeUpdate("delete from DEVICETABLE");
 			stmt.executeUpdate("delete from MANAGEDSETS");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -98,7 +98,7 @@ public class ConfigTest {
 					this.storeDomainDeploymentTable();
 					this.storeManagedSets();
 					this.storeManagedSetDevices();
-
+					this.storeServiceEndPoints();
 					// configTest.storeServiceEndPoints();
 
 					this.printDevicesCount();
@@ -217,6 +217,8 @@ public class ConfigTest {
 	}
 
 	public void storeDeploymentPolicy() {
+		deploymentPolicyIdSet.clear();
+		
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
@@ -224,7 +226,7 @@ public class ConfigTest {
 				for (String policy_id : domain.getDeploymentPolicies().keySet()) {
 					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
 					try {
-						if (policyUniqueCheck.add(deploymentPolicy.getId())) {
+						if (deploymentPolicyIdSet.add(deploymentPolicy.getId())) {
 							stmt.addBatch("insert into DEPLOYMENTPOLICY (XMIID,HIGHESTVERSION,SYNCHDATE,POLICYTYPE)"
 									+ "values('"
 									+ deploymentPolicy.getId()
@@ -282,19 +284,24 @@ public class ConfigTest {
 	}
 
 	public void storeServiceEndPoints() {
+		
+		Set<String> serviceEndPointSet = new HashSet<String>();
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
 				domain = device.getDomain(domain_id);
-				for (String policy_id : policyUniqueCheck) {
+				for (String policy_id : deploymentPolicyIdSet) {
 					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
 					if (deploymentPolicy != null) {
 						for (String service_id : deploymentPolicy
 								.getServiceEndPoints().keySet()) {
 							serviceEndPoint = deploymentPolicy
 									.getServiceEndPoint(service_id);
+							if(serviceEndPointSet.add(serviceEndPoint.getId())== false){
+								System.out.print(serviceEndPoint.getId() + ", ");
+							}
 							try {
-								stmt.addBatch("insert into ServiceEndpointTable (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
+								stmt.addBatch("insert into ServiceEndpoints (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
 										+ "values('"
 										+ serviceEndPoint.getId()
 										+ "','"
@@ -303,10 +310,11 @@ public class ConfigTest {
 										+ serviceEndPoint.getOperation()
 										+ "',"
 										+ serviceEndPoint.getPort()
-										+ ""
 										+ ",'"
 										+ serviceEndPoint.getTargetServer()
-										+ "','" + policy_id + "')");
+										+ "','"
+										+ policy_id 
+										+ "')");
 							} catch (SQLException e) {
 								continue;
 							}
@@ -382,7 +390,7 @@ public class ConfigTest {
 			for (String device_id : dpManager.getDevices().keySet()) {
 				device = dpManager.getDevice(device_id);
 				try {
-					if (devicesUniqueCheck.add(device.getId())) {
+					if (devicesIdSet.add(device.getId())) {
 						stmt.addBatch("insert into DEVICETABLE (XMIID,DEVICETYPE,GUIPORT,HLMPORT,CURRENTAMPVERSION,QUISECETIMEOUT,FEATURELICENSES)"
 								+ "values('"
 								+ device.getId()
