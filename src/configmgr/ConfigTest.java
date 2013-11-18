@@ -28,6 +28,7 @@ public class ConfigTest {
 	HashMap<String, Device> devicesCollection = new HashMap<String, Device>();
 	HashMap<String, DeploymentPolicy> deploymentPoliciesCollection = new HashMap<String, DeploymentPolicy>();
 	HashMap<String, DPManager> dpManagers = new HashMap<String, DPManager>();
+	HashMap<String, ServiceEndPoint> serviceEndPointCollection = new HashMap<String, ServiceEndPoint>();
 	Set<String> devicesIdSet = new HashSet<String>();
 	Set<String> deploymentPolicyIdSet = new HashSet<String>();
 	Set<String> managedUniqueCheck = new HashSet<String>();
@@ -52,7 +53,7 @@ public class ConfigTest {
 			stmt.executeUpdate("delete from DEVICETABLE");
 			stmt.executeUpdate("delete from MANAGEDSETS");
 		} catch (SQLException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -80,6 +81,7 @@ public class ConfigTest {
 
 				if (split_args.length == 1) {
 					fileName = split_args[0];
+					System.out.print(fileName);
 				} else if (split_args[0].equalsIgnoreCase("end")) {
 					break;
 				} else {
@@ -99,7 +101,6 @@ public class ConfigTest {
 					this.storeManagedSets();
 					this.storeManagedSetDevices();
 					this.storeServiceEndPoints();
-					// configTest.storeServiceEndPoints();
 
 					this.printDevicesCount();
 					this.printDeploymentPoliciesCount();
@@ -111,23 +112,6 @@ public class ConfigTest {
 			System.out.println("Error in reading command.");
 		}
 
-	}
-
-	public String getCmdLine() {
-
-		InputStreamReader istr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(istr);
-		try {
-			String cmdString = br.readLine();
-			// System.out.println(cmdString);
-			return cmdString;
-		}
-
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public void parseConfigXML(String xml) {
@@ -148,6 +132,12 @@ public class ConfigTest {
 				tmpDev = null;
 			}
 
+			for (String tmpkey : serviceEndPointCollection.keySet()) {
+				ServiceEndPoint tmpSer = serviceEndPointCollection.get(tmpkey);
+				tmpSer = null;
+			}
+
+			serviceEndPointCollection.clear();
 			deploymentPoliciesCollection.clear();
 			devicesCollection.clear();
 			dpManager = new DPManager();
@@ -163,16 +153,17 @@ public class ConfigTest {
 
 			dpManager = configParser.getDPManager();
 
+			dpManagers = configParser.getDpManagers();
+			serviceEndPointCollection = configParser
+					.getServiceEndPointCollection();
+
 		} catch (Exception ex) {
-			System.out
-					.println("Error reading the XML file. Please provide valid file.");
-			// ex.printStackTrace();
+			System.out.println("Error reading the XML file. "
+					+ "Please provide valid file.");
 		}
-		dpManagers = configParser.getDpManagers();
 	}
 
 	// Prints number of Devices in DPmanager
-
 	public void printDPDeviceCount() {
 		// System.out.println("No. of DP Devices:");
 		dpManager.printDPDeviceCount();
@@ -218,7 +209,7 @@ public class ConfigTest {
 
 	public void storeDeploymentPolicy() {
 		deploymentPolicyIdSet.clear();
-		
+
 		for (String device_id : dpManager.getDevices().keySet()) {
 			device = dpManager.getDevice(device_id);
 			for (String domain_id : device.getDomains().keySet()) {
@@ -284,53 +275,58 @@ public class ConfigTest {
 	}
 
 	public void storeServiceEndPoints() {
-		
-		Set<String> serviceEndPointSet = new HashSet<String>();
-		for (String device_id : dpManager.getDevices().keySet()) {
-			device = dpManager.getDevice(device_id);
-			for (String domain_id : device.getDomains().keySet()) {
-				domain = device.getDomain(domain_id);
-				for (String policy_id : deploymentPolicyIdSet) {
-					deploymentPolicy = domain.getDeploymentPolicy(policy_id);
-					if (deploymentPolicy != null) {
-						for (String service_id : deploymentPolicy
-								.getServiceEndPoints().keySet()) {
-							serviceEndPoint = deploymentPolicy
-									.getServiceEndPoint(service_id);
-							if(serviceEndPointSet.add(serviceEndPoint.getId())== false){
-								System.out.print(serviceEndPoint.getId() + ", ");
-							}
-							try {
-								stmt.addBatch("insert into ServiceEndpoints (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
-										+ "values('"
-										+ serviceEndPoint.getId()
-										+ "','"
-										+ serviceEndPoint.getType()
-										+ "','"
-										+ serviceEndPoint.getOperation()
-										+ "',"
-										+ serviceEndPoint.getPort()
-										+ ",'"
-										+ serviceEndPoint.getTargetServer()
-										+ "','"
-										+ policy_id 
-										+ "')");
-							} catch (SQLException e) {
-								continue;
-							}
-						}
-					}
 
-				}
+		ServiceEndPoint currSerEndPoint = new ServiceEndPoint();
+		for (String serviceEndPointId : serviceEndPointCollection.keySet()) {
+			currSerEndPoint = serviceEndPointCollection.get(serviceEndPointId);
+			try {
+				stmt.addBatch("insert into ServiceEndpoints (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
+						+ "values('"
+						+ currSerEndPoint.getId()
+						+ "','"
+						+ currSerEndPoint.getType()
+						+ "','"
+						+ currSerEndPoint.getOperation()
+						+ "',"
+						+ currSerEndPoint.getPort()
+						+ ",'"
+						+ currSerEndPoint.getTargetServer()
+						+ "','"
+						+ currSerEndPoint.getDepPolicyId() + "')");
+			} catch (SQLException e) {
+				continue;
 			}
 		}
 		try {
 			stmt.executeBatch();
 			stmt.clearBatch();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error: store Service End points.");
+			// e.printStackTrace();
 		}
+		/*
+		 * Set<String> serviceEndPointSet = new HashSet<String>(); for (String
+		 * device_id : dpManager.getDevices().keySet()) { device =
+		 * dpManager.getDevice(device_id); for (String domain_id :
+		 * device.getDomains().keySet()) { domain = device.getDomain(domain_id);
+		 * for (String policy_id : deploymentPolicyIdSet) { deploymentPolicy =
+		 * domain.getDeploymentPolicy(policy_id); if (deploymentPolicy != null)
+		 * { for (String service_id : deploymentPolicy
+		 * .getServiceEndPoints().keySet()) { serviceEndPoint = deploymentPolicy
+		 * .getServiceEndPoint(service_id); if
+		 * (serviceEndPointSet.add(serviceEndPoint.getId()) == false) {
+		 * System.out .print(serviceEndPoint.getId() + ", "); } try {
+		 * stmt.addBatch(
+		 * "insert into ServiceEndpoints (XMIID,TYPE,OPERATION,PORT,TARGETSERVER,DPPOLICYID)"
+		 * + "values('" + serviceEndPoint.getId() + "','" +
+		 * serviceEndPoint.getType() + "','" + serviceEndPoint.getOperation() +
+		 * "'," + serviceEndPoint.getPort() + ",'" +
+		 * serviceEndPoint.getTargetServer() + "','" + policy_id + "')"); }
+		 * catch (SQLException e) { continue; } } }
+		 * 
+		 * } } }
+		 */
+
 	}
 
 	// Prints all attributes of a ServicePoint with serviceEndPointId of
@@ -458,28 +454,28 @@ public class ConfigTest {
 		}
 	}
 
-	public void printDeploymentPoliciesCount() {
+	public void printDevicesCount() {
 		try {
 			rs = stmt
-					.executeQuery("select count(*) AS number_policies from DeploymentPolicy");
+					.executeQuery("select count(*) AS devicesCount from DEVICETABLE");
 			if (rs.next()) {
-				System.out.println(rs.getInt("number_policies"));
+				System.out.print(rs.getInt("devicesCount"));
 			}
 		} catch (SQLException e) {
-			System.out.println("Error: print Deployment Policies count.");
+			System.out.println("Error: print Devices Count.");
 			// e.printStackTrace();
 		}
 	}
 
-	public void printDevicesCount() {
+	public void printDeploymentPoliciesCount() {
 		try {
 			rs = stmt
-					.executeQuery("select count(*) AS number_nodes from DEVICETABLE");
+					.executeQuery("select count(*) AS policiesCount from DeploymentPolicy");
 			if (rs.next()) {
-				System.out.println(rs.getInt("number_nodes"));
+				System.out.print(" " + rs.getInt("policiesCount"));
 			}
 		} catch (SQLException e) {
-			System.out.println("Error: print Devices Count.");
+			System.out.println("Error: print Deployment Policies count.");
 			// e.printStackTrace();
 		}
 	}

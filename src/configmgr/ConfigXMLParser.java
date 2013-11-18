@@ -12,9 +12,14 @@ public class ConfigXMLParser extends DefaultHandler {
 	private final StringBuilder tempVal = new StringBuilder();
 
 	private HashMap<String, DPManager> dpManagers;
+	private HashMap<String, ServiceEndPoint> serviceEndPointCollection = new HashMap<String, ServiceEndPoint>();
 
 	public HashMap<String, DPManager> getDpManagers() {
 		return dpManagers;
+	}
+
+	public HashMap<String, ServiceEndPoint> getServiceEndPointCollection() {
+		return this.serviceEndPointCollection;
 	}
 
 	private DPManager dbManager;
@@ -103,15 +108,12 @@ public class ConfigXMLParser extends DefaultHandler {
 			managedSet = new ManagedSet();
 
 			managedSet.setId(attributes.getValue(TAG_ID));
-
 			String tempDeviceMembers = attributes.getValue("devicemembers");
 
 			for (String tempDeviceId : tempDeviceMembers.split(",")) {
 				managedSet.addDeviceMember(tempDeviceId);
 			}
-		}
-		else
-		{
+		} else {
 			System.out.println();
 		}
 
@@ -134,6 +136,13 @@ public class ConfigXMLParser extends DefaultHandler {
 		if (TAG_MANAGED_SET.equalsIgnoreCase(qName)) {
 			dbManager.addManagedSet(managedSet);
 		} else if (TAG_SERVICE_END_POINT.equalsIgnoreCase(qName)) {
+			
+			serviceEndPoint.setDepPolicyId(deploymentPolicy.getId());
+			
+			if(!serviceEndPointCollection.containsKey(serviceEndPoint.getId())){
+				serviceEndPointCollection.put(serviceEndPoint.getId(), serviceEndPoint);
+			}			
+			
 			deploymentPolicy.addServiceEndPoint(serviceEndPoint);
 		} else if (TAG_DEPLOYMENT_POLICY.equalsIgnoreCase(qName)) {
 			domain.addDeploymentPolicy(deploymentPolicy);

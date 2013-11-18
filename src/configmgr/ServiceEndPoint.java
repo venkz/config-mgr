@@ -12,6 +12,16 @@ public class ServiceEndPoint {
 
 	private String targetServer;
 
+	private String depPolicyId;
+	
+	public String getDepPolicyId() {
+		return depPolicyId;
+	}
+
+	public void setDepPolicyId(String depPolicyId) {
+		this.depPolicyId = depPolicyId;
+	}
+
 	public ServiceEndPoint() {
 		// TODO Auto-generated constructor stub
 	}
