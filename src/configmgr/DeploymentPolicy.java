@@ -24,16 +24,6 @@ public class DeploymentPolicy {
 
 	public ServiceEndPoint getServiceEndPoint(String serviceEndPointId){
 		return this.serviceEndPoints.get(serviceEndPointId);
-		
-		/*for(String key : serviceEndPoints.keySet())
-		{
-			ServiceEndPoint serviceEndPoint = this.serviceEndPoints.get(key);
-			if(serviceEndPoint.getId().equalsIgnoreCase(serviceEndPointId)){
-				return serviceEndPoint;
-			}
-		}
-		return null;*/
-		//return serviceEndPoints.get(serviceEndPointId);
 	}
 	
 	public void printServiceEndPointCount(){

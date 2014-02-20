@@ -2,7 +2,7 @@ package configmgr;
 
 import java.util.HashMap;
 
-public class Domains {
+public class Domain {
 
 	private String id;
 	

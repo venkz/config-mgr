@@ -7,35 +7,48 @@ public class DPManager {
 	private String id;
 
 	private String dat;
-	
+
 	private String xmi;
-	
+
 	private double version;
-	
+
 	private int versionsStoredLimit;
+
+	private HashMap<String, Device> devices = new HashMap<String, Device>();
+
+	private HashMap<String, ManagedSet> managedSets = new HashMap<String, ManagedSet>();
+
+	public HashMap<String, ManagedSet> getManagedSets() {
+		return this.managedSets;
+	}
 	
-	private HashMap<String, Devices> devices = new HashMap<String, Devices>();
-	
-	public void addDevice(Devices device){
+	public void addManagedSet(ManagedSet managedSet) {
+		managedSets.put(managedSet.getId(), managedSet);
+	}
+
+	public ManagedSet getManagedSet(String managedSetId){
+		return this.managedSets.get(managedSetId);
+	}
+
+	public void addDevice(Device device) {
 		devices.put(device.getId(), device);
 	}
-	
-	/*/
-	 * Returns all devices in DPManager
+
+	/*
+	 * / Returns all devices in DPManager
 	 */
-	public HashMap<String, Devices> getDevices(){
+	public HashMap<String, Device> getDevices() {
 		return devices;
 	}
-	
-	public Devices getDevice(String deviceId){
+
+	public Device getDevice(String deviceId) {
 		return devices.get(deviceId);
 	}
-	
-	public void printDPDeviceCount(){
+
+	public void printDPDeviceCount() {
 		System.out.println(devices.size());
 	}
-	
-	
+
 	public String getId() {
 		return id;
 	}

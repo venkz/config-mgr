@@ -15,7 +15,7 @@ insert into varun values (100, '2305 champion ct');
 create table ManagedSets (xmiid varchar(100) PRIMARY KEY);
 
 #ManagedSets table
-create table ManagedSetsDeviceMapping (manageSetId varchar(100), DEVICEMEMBERS varchar(100), PRIMARY KEY(manageSetId,DEVICEMEMBERS), FOREIGN KEY(manageSetId) REFERENCES ManagedSets(xmiid), FOREIGN KEY(DEVICEMEMBERS) REFERENCES Devicetable(xmiid) );
+create table ManagedSetDevices (manageSetId varchar(100), DEVICEID varchar(100), PRIMARY KEY(manageSetId,DEVICEID));
 
 #Device table
 create table Devicetable (xmiid varchar(100) PRIMARY KEY, devicetype varchar(50), GUIPort int, HLMPort int, currentAMPVersion float(8), quiseceTimeout int, featureLicenses varchar(1000));
@@ -30,4 +30,4 @@ create table DeploymentPolicy (xmiid varchar(100) PRIMARY KEY, HighestVersion in
  create table DomainDeploymentTable(domainId varchar(100), deploymentID varchar(100),PRIMARY KEY(domainId,deploymentID), FOREIGN KEY(domainId) REFERENCES Domaintable(xmiid), FOREIGN KEY(deploymentID) REFERENCES DeploymentPolicy(xmiid));           
 
 # Service Endpoint
-create table ServiceEndpointTable (xmiid varchar(100) PRIMARY KEY,type varchar(100),operation varchar(100),port int, targetserver varchar(200), DPPolicyId varchar(100), FOREIGN KEY(DPPolicyId) REFERENCES DeploymentPolicy(xmiid));
+create table ServiceEndpoints (xmiid varchar(100) PRIMARY KEY,type varchar(100),operation varchar(100),port int, targetserver varchar(200), DPPolicyId varchar(100), FOREIGN KEY(DPPolicyId) REFERENCES DeploymentPolicy(xmiid));
