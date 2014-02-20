@@ -41,8 +41,9 @@ public class ConfigXMLParser extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) {
 
+		// Push the start element of XML on stack which is further popped in end 
+		// element in order to verify an valid XML
 		pushTag(qName);
-		// tempVal.setl
 
 		if (TAG_DP_MANAGER.equalsIgnoreCase(qName)) {
 
@@ -58,6 +59,7 @@ public class ConfigXMLParser extends DefaultHandler {
 			dbManager.setId(attributes.getValue("xmi:id"));
 
 		} else if (TAG_DEVICES.equalsIgnoreCase(qName)) {
+			
 			device = new Device();
 
 			device.setId(attributes.getValue("xmi:id"));
@@ -69,7 +71,9 @@ public class ConfigXMLParser extends DefaultHandler {
 			device.setQuiesceTimeout(Integer.parseInt(attributes
 					.getValue("quiesceTimeout")));
 			device.setFeatureLicenses(attributes.getValue("featureLicenses"));
+			
 		} else if (TAG_DOMAINS.equalsIgnoreCase(qName)) {
+			
 			domain = new Domain();
 
 			domain.setId(attributes.getValue(TAG_ID));
@@ -84,6 +88,7 @@ public class ConfigXMLParser extends DefaultHandler {
 			domain.setSyncMode(attributes.getValue("SyncMode"));
 
 		} else if (TAG_DEPLOYMENT_POLICY.equalsIgnoreCase(qName)) {
+			
 			deploymentPolicy = new DeploymentPolicy();
 
 			deploymentPolicy.setId(attributes.getValue(TAG_ID));
@@ -94,6 +99,7 @@ public class ConfigXMLParser extends DefaultHandler {
 			deploymentPolicy.setPolicyType(attributes.getValue("policyType"));
 
 		} else if (TAG_SERVICE_END_POINT.equalsIgnoreCase(qName)) {
+			
 			serviceEndPoint = new ServiceEndPoint();
 
 			serviceEndPoint.setId(attributes.getValue(TAG_ID));
@@ -105,6 +111,7 @@ public class ConfigXMLParser extends DefaultHandler {
 					.setTargetServer(attributes.getValue("targetserver"));
 
 		} else if (TAG_MANAGED_SET.equalsIgnoreCase(qName)) {
+			
 			managedSet = new ManagedSet();
 
 			managedSet.setId(attributes.getValue(TAG_ID));
@@ -114,20 +121,23 @@ public class ConfigXMLParser extends DefaultHandler {
 				managedSet.addDeviceMember(tempDeviceId);
 			}
 		} else {
-			System.out.println();
+			// Error Case
+			System.out.println("Unknown XML element found");
 		}
 
 	}
 
+	// Read element value
 	public void characters(char ch[], int start, int length) {
 		tempVal.append(ch, start, length);
 	}
+	
 
 	public void endElement(String uri, String localName, String qName) {
 		String tag = peekTag();
 
+		// Pop from stack to verify an Valid XML
 		if (!qName.equals(tag)) {
-			// Error
 			throw new InternalError();
 		}
 
